@@ -3,7 +3,7 @@ services:
   # N8N - AI Workflow Automation
   # ===========================================
   n8n:
-    image: n8nio/n8n:1.68.0-alpine
+    image: n8nio/n8n:2.1.0
     container_name: academy_n8n
     restart: unless-stopped
     ports:
