@@ -2,39 +2,132 @@
 
 **Task:** Foreign languages Academy Questions and Answers automation using AI.
 
-**Acceptance criteria:** Use n8n for AI processing with webhooks, telegram bot and email responses with human response when needed. 
+**Acceptance criteria:** Use n8n for AI processing with webhooks, telegram bot and email responses with human response when needed.
+
 - The n8n flow can manage exceptions.
 - The AI has a RAG system for answers
 - The AI can answer questions in Spanish and English
 - The AI responds questions on schedules, prices, levels, inscriptions, certifications and modalities
-- There's cached responses for the same questions.
+- There's cached responses for the same questions (embedding similarity-based)
 - The application is containerized with docker
 
-## Tech stack
-- n8n
-- docker
-- docker-compose
-- node.js
-- ChatGPT
-### Install tech stack
+## Architecture
 
-## Instructions
-0. Change into the directory you wish. Example:
-```bash
-    cd apps/Academy_responses/
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Docker Network                                              │
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │     n8n      │  │  PostgreSQL  │  │     Redis        │  │
+│  │    :5678     │  │    :5432     │  │     :6379        │  │
+│  │              │◄─┤ (n8n_db +    │◄─┤   (caching)      │  │
+│  │ AI Workflows │  │  users_db)   │  │                  │  │
+│  └──────────────┘  └──────────────┘  └──────────────────┘  │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────────┐│
+│  │ RAG Context (volume mount)                              ││
+│  │ rag/rag_context.txt                                     ││
+│  └─────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────┘
 ```
 
-1. Clone the repository
+## Tech Stack
+
+- n8n (workflow automation)
+- PostgreSQL 15 (databases)
+- Redis 7 (caching)
+- Docker & Docker Compose
+
+## Quick Start
+
+### 1. Copy environment file
+
 ```bash
-    git clone https://github.com/SrLampi1001/ai_assesment_test.git
+cp .env.example .env
 ```
 
-2. Create a .env file  
-    Use the .env.example file as a template
+### 2. Configure your environment
 
-3. Execute the docker command
+Edit `.env` and fill in:
+
+- `OPENAI_API_KEY` - Your OpenAI API key (or use the free API)
+- `TELEGRAM_BOT_TOKEN` - Your Telegram bot token
+- `EMAIL_SMTP_*` - Your email SMTP settings
+- Update passwords for security
+
+### 3. Start the application
+
 ```bash
-    docker compose up -d
+docker compose up -d
 ```
 
-4. If you wish to change the RAG context, change the content of the `rag_context.txt` file in the `rag` folder and restart the application
+### 4. Access n8n
+
+Open http://localhost:5678 and login with:
+- User: `admin`
+- Password: (from your `.env` file)
+
+## Updating RAG Context
+
+Edit the `rag/rag_context.txt` file to update the AI's knowledge base. Restart n8n to apply changes:
+
+```bash
+docker compose restart n8n
+```
+
+## Caching Configuration
+
+The system uses embedding similarity by default for cached responses. To change the caching strategy:
+
+1. Edit `.env`
+2. Change `CACHE_STRATEGY` to `exact` if you want exact question matching
+3. Adjust `CACHE_SIMILARITY_THRESHOLD` (0.0 to 1.0) to control similarity matching strictness
+
+## User Input Channels
+
+Users can ask questions via:
+
+- **Telegram Bot** - Send messages to your Telegram bot
+- **Email** - Send emails to your configured SMTP address
+- **Web Form** - Via n8n webhook endpoints
+
+## Stopping the Application
+
+```bash
+docker compose down
+```
+
+To also remove volumes (deletes all data):
+
+```bash
+docker compose down -v
+```
+
+## Project Structure
+
+```
+.
+├── docker-compose.yml     # Main compose file
+├── .env.example           # Environment template
+├── .env                   # Your environment (not committed)
+├── .gitignore
+├── rag/
+│   └── rag_context.txt    # RAG knowledge base
+├── postgres-init/
+│   └── init-multiple-dbs.sh  # Database initialization
+└── README.md
+```
+
+## Health Checks
+
+- n8n: http://localhost:5678/healthz
+- PostgreSQL: `docker exec academy_postgres pg_isready`
+- Redis: `docker exec academy_redis redis-cli ping`
+
+## Next Steps
+
+After verifying the AI responses work correctly:
+
+1. Set up the admin panel for human intervention on unanswered questions
+2. Configure web form UI
+3. Add more RAG context for specific topics
