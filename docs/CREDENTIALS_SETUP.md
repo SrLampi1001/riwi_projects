@@ -13,154 +13,158 @@ n8n v2 stores credentials encrypted in the database. The `N8N_BASIC_AUTH_*` envi
 
 2. **Workflow Credentials** (Encrypted in DB)
    - Stored in PostgreSQL, encrypted with `N8N_ENCRYPTION_KEY`
-   - Used by nodes (Redis, HTTP Request, etc.)
+   - Used by nodes (Redis, IMAP, SMTP, Telegram, etc.)
    - Must be created in the UI or imported
 
 ---
 
-## Setup Steps
+## Required Credentials
 
-### 1. Start the Application
+The workflow `academy-ai-workflow-stable.json` requires these credentials:
 
-```bash
-docker compose up -d
-```
-
-### 2. Create Initial Admin User
-
-1. Open http://localhost:5678
-2. You'll be prompted to create an account
-3. Use the credentials from your `.env`:
-   - Email: Whatever you want (these aren't used for login in basic auth mode)
-   - Password: Use `N8N_BASIC_AUTH_PASSWORD` value
-4. Or if already logged in before, use the basic auth user/password
-
-### 3. Create Credentials in n8n UI
-
-For each service, create a credential in **Settings > Credentials**:
-
-#### Redis Credentials
+### 1. Redis API
 1. Go to **Settings > Credentials > New Credential**
 2. Select **Redis API**
 3. Configure:
-   - **Host**: `redis` (the container name)
-   - **Port**: `6379`
-4. **Name it**: `Redis API`
+   - **Host**: `redis` (the container name, or `{{ $env.REDIS_HOST }}`)
+   - **Port**: `6379` (or `{{ $env.REDIS_PORT }}`)
+4. Save as `Redis API`
 
-#### Google Gemini API
-n8n v2 with LangChain nodes uses OAuth2 for Google Gemini. To use the `Google Gemini Chat Model` and `Embeddings Google Gemini` nodes:
-
-**Prerequisites:**
-- A Google AI Studio API key (get it at https://aistudio.google.com/app/apikey)
-
-**Setup:**
+### 2. IMAP (Email Inbox - for Email Trigger)
 1. Go to **Settings > Credentials > New Credential**
-2. Select **Google Gemini API**
+2. Select **IMAP Email** (or "Email (IMAP)")
 3. Configure:
-   - **API Key**: `={{ $env.GOOGLE_API_KEY }}` (or paste your key directly)
-   - **Name it**: `Google Gemini API`
-4. Save
+   - **Host**: `{{ $env.IMAP_HOST }}` (e.g., imap.gmail.com)
+   - **Port**: `{{ $env.IMAP_PORT }}` (993 for SSL)
+   - **User**: `{{ $env.IMAP_USER }}`
+   - **Password**: `{{ $env.IMAP_PASS }}`
+4. Save as `IMAP Email`
 
-**For the workflow (`academy-ai-workflow-v2.json`):**
-- It expects a credential named `Google Gemini API`
-- If you named it differently, update the credential reference in the workflow nodes
-
-**Alternative: Direct API Key in Nodes**
-If credential-based auth doesn't work, you can use the HTTP Request node with:
-- URL: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $env.GOOGLE_API_KEY }}`
-
-#### Telegram Bot
+### 3. SMTP (Email Sending)
 1. Go to **Settings > Credentials > New Credential**
-2. Select **Telegram Bot Api**
-3. Enter your bot token (get from @BotFather on Telegram)
-4. Save
-
-#### Email/SMTP
-1. Go to **Settings > Credentials > New Credential**
-2. Select **SMTP** (or "Email (SMTP)" depending on n8n version)
+2. Select **SMTP** (or "Email (SMTP)")
 3. Configure:
    - **Host**: `{{ $env.EMAIL_SMTP_HOST }}`
    - **Port**: `{{ $env.EMAIL_SMTP_PORT }}`
    - **User**: `{{ $env.EMAIL_SMTP_USER }}`
    - **Password**: `{{ $env.EMAIL_SMTP_PASS }}`
    - **From Email**: `{{ $env.EMAIL_FROM }}`
-4. Save
+4. Save as `SMTP Email`
 
----
+### 4. Telegram Bot
+1. Get your bot token from [@BotFather](https://t.me/BotFather) on Telegram
+2. Go to **Settings > Credentials > New Credential**
+3. Select **Telegram Bot Api**
+4. Enter your bot token
+5. Save as `Telegram Bot`
 
-## Alternative: Import Workflow with Embedded Credentials
+### 5. Google Gemini API Key
+The workflow uses HTTP Request to call Gemini directly, so no special credential is needed. The API key is passed via `{{ $env.GOOGLE_API_KEY }}` in the URL query parameter.
 
-For automated/CI setups, you can import workflows with credentials pre-configured:
-
-### Limitations
-- Credentials are encrypted with a master key
-- Requires `N8N_ENCRYPTION_KEY` to be set consistently
-- Not recommended for local development
-
-### Process
-1. Create credentials in UI first
-2. Export workflow (includes credential IDs)
-3. Other n8n instances can import if they have the same `N8N_ENCRYPTION_KEY`
+If you prefer credential-based auth:
+1. Go to **Settings > Credentials > New Credential**
+2. Select **Google Gemini API** (if available in your n8n version)
+3. Enter your API key from https://aistudio.google.com/app/apikey
 
 ---
 
 ## Using Environment Variables in Workflows
 
-### Via $env Variable
-In Code nodes or expressions:
-```javascript
-const apiKey = $env.GOOGLE_API_KEY;
-```
-
-### Via Variable Selector
-In HTTP Request nodes, use the variable selector to pick:
-`{{ $env.VARIABLE_NAME }}`
-
 ### Available Environment Variables
 | Variable | Description |
 |----------|-------------|
 | `GOOGLE_API_KEY` | Gemini API key |
-| `GEMINI_MODEL` | Gemini model to use (default: gemini-1.5-flash) |
+| `GEMINI_MODEL` | Gemini model (default: gemini-1.5-flash) |
 | `N8N_BASIC_AUTH_USER` | n8n login username |
 | `N8N_BASIC_AUTH_PASSWORD` | n8n login password |
 | `N8N_ENCRYPTION_KEY` | Encryption key for credential storage |
-| `REDIS_HOST` | Redis container hostname |
-| `REDIS_PORT` | Redis port |
+| `REDIS_HOST` | Redis container hostname (redis) |
+| `REDIS_PORT` | Redis port (6379) |
 | `TELEGRAM_BOT_TOKEN` | Telegram bot token |
 | `HUMAN_SUPPORT_CHAT_ID` | Telegram chat ID for admin notifications |
 | `HUMAN_SUPPORT_EMAIL` | Email address for admin notifications |
 | `EMAIL_FROM` | From email address for outgoing emails |
 | `EMAIL_SMTP_HOST` | SMTP server hostname |
 | `EMAIL_SMTP_PORT` | SMTP server port |
+| `IMAP_HOST` | IMAP server hostname |
+| `IMAP_PORT` | IMAP server port |
+| `IMAP_USER` | IMAP username |
+| `IMAP_PASS` | IMAP password |
+
+---
+
+## Workflow Files
+
+### Recommended: `workflows/academy-ai-workflow-stable.json`
+Uses only standard n8n nodes (no LangChain dependencies):
+- Webhook trigger
+- Telegram trigger
+- Email (IMAP) trigger
+- Redis caching
+- HTTP Request for Gemini API
+- Code nodes for logic
+
+### Legacy: `workflows/academy-ai-workflow-v2.json`
+Uses LangChain nodes (requires `@n8n/n8n-nodes-langchain` package).
+
+### Legacy: `workflows/academy-ai-workflow.json`
+Basic workflow with Redis but no Email trigger.
+
+---
+
+## To Import and Activate the Workflow
+
+1. **Start the application:**
+   ```bash
+   docker compose up -d
+   ```
+
+2. **Open n8n** at http://localhost:5678 and log in
+
+3. **Import the workflow:**
+   - Go to **Settings > Workflows**
+   - Click **Import from JSON**
+   - Upload `workflows/academy-ai-workflow-stable.json`
+
+4. **Create credentials** (if not already created):
+   - Redis API
+   - IMAP Email
+   - SMTP Email
+   - Telegram Bot
+
+5. **Assign credentials** to nodes:
+   - Open each node that requires credentials
+   - Select the appropriate credential from the dropdown
+
+6. **Activate the workflow:**
+   - Toggle the workflow to "Active"
+
+7. **Test:**
+   - Webhook: `POST http://localhost:5678/webhook/academy-webhook` with `{"question": "Cuales son los horarios?"}`
+   - Telegram: Send a message to your bot
+   - Email: Send an email to your configured inbox
 
 ---
 
 ## Troubleshooting
 
-### "Invalid credentials" when workflow runs
-1. Ensure credentials are created in **Settings > Credentials**
-2. Check that credential names match what nodes expect
-3. Verify `N8N_ENCRYPTION_KEY` hasn't changed (it would invalidate all credentials)
+### "Node does not exist" errors
+This means the LangChain nodes aren't installed. Use `academy-ai-workflow-stable.json` instead.
 
-### "Login failed" for n8n UI
-1. Check `N8N_BASIC_AUTH_*` env vars are set correctly in `.env`
-2. Restart n8n container: `docker compose restart n8n`
-3. Clear browser cookies/localStorage
+### Redis connection fails
+1. Check Redis is running: `docker compose ps redis`
+2. Verify Redis credentials: Host should be `redis` not `localhost`
 
-### Can't access environment variables in nodes
-1. Ensure the variable exists in your `.env` file
-2. Restart n8n after adding new env vars: `docker compose restart n8n`
-3. Use exact syntax: `={{$env.VARIABLE_NAME}}`
+### Email trigger not working
+1. Enable IMAP on your Gmail account:
+   - Go to Google Account > Security
+   - Enable "Less secure app access" OR use an App Password
+2. For Gmail with 2FA, use an App Password instead of your regular password
 
----
-
-## Security Notes
-
-- **Never commit `.env` to git** - it contains secrets
-- **Use strong `N8N_ENCRYPTION_KEY`** - Generate with `openssl rand -hex 32`
-- **Change default passwords** - Update all `*_PASSWORD` values
-- **Redis has no authentication** - It's only accessible within the Docker network
-- **PostgreSQL credentials** - Used internally, change for production
+### Gemini API errors
+1. Verify `GOOGLE_API_KEY` is set in `.env`
+2. Restart n8n after changing env vars: `docker compose restart n8n`
+3. Check the API key is valid at https://aistudio.google.com/app/apikey
 
 ---
 
@@ -174,24 +178,13 @@ The RAG context file is mounted into the n8n container at `/data/rag/rag_context
 1. Edit `rag/rag_context.txt`
 2. Restart n8n: `docker compose restart n8n`
 
-**Note:** The in-memory vector store is rebuilt on every workflow execution. For production with better performance, consider using a persistent vector store (like Qdrant or Pinecone).
-
 ---
 
-## Workflow Files
+## Security Notes
 
-Two workflow templates are provided:
-
-1. **`workflows/academy-ai-workflow.json`** - Basic workflow with RAG support
-2. **`workflows/academy-ai-workflow-v2.json`** - Full workflow with human handoff support
-
-**To import a workflow:**
-1. Open n8n at http://localhost:5678
-2. Go to **Settings > Workflows**
-3. Click **Import from JSON**
-4. Paste the workflow JSON or upload the file
-
-**After import:**
-1. Create the required credentials (Google Gemini API, Redis, Telegram, SMTP)
-2. Open each node that needs credential selection and pick the appropriate credential
-3. Activate the workflow
+- **Never commit `.env` to git** - it contains secrets
+- **Use strong `N8N_ENCRYPTION_KEY`** - Generate with `openssl rand -hex 32`
+- **Change default passwords** - Update all `*_PASSWORD` values
+- **Redis has no authentication** - It's only accessible within the Docker network
+- **PostgreSQL credentials** - Used internally, change for production
+- **IMAP/SMTP credentials** - Use App Passwords for Gmail

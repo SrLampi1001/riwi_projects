@@ -52,9 +52,22 @@ Edit `.env` and fill in:
 
 - `GOOGLE_API_KEY` - Get one at [Google AI Studio](https://aistudio.google.com/app/apikey)
 - `N8N_ENCRYPTION_KEY` - Generate with: `openssl rand -hex 32`
-- `TELEGRAM_BOT_TOKEN` - Your Telegram bot token
+- `TELEGRAM_BOT_TOKEN` - Your Telegram bot token (from @BotFather)
 - `EMAIL_SMTP_*` - Your email SMTP settings
-- Update passwords for security
+- `IMAP_*` - Your email IMAP settings (for receiving emails)
+- `HUMAN_SUPPORT_CHAT_ID` - Your Telegram chat ID (for admin notifications)
+- Update all passwords for security
+
+### 3. Create credentials in n8n
+
+After starting, you must create credentials in n8n UI:
+
+1. Go to http://localhost:5678 > Settings > Credentials
+2. Create these credentials:
+   - **Redis API**: Host=`redis`, Port=6379
+   - **IMAP Email**: Use your IMAP settings
+   - **SMTP Email**: Use your SMTP settings
+   - **Telegram Bot Api**: Your bot token
 
 ### 3. Start the application
 
@@ -116,8 +129,20 @@ docker compose down -v
 │   └── rag_context.txt    # RAG knowledge base
 ├── postgres-init/
 │   └── init-multiple-dbs.sh  # Database initialization
+├── workflows/
+│   └── academy-ai-workflow-stable.json  # Recommended workflow
 └── README.md
 ```
+
+## Workflow
+
+Use `workflows/academy-ai-workflow-stable.json` - it uses only standard n8n nodes:
+- Webhook trigger (for web forms)
+- Telegram trigger (for Telegram bot)
+- Email trigger via IMAP (for email questions)
+- Redis for response caching
+- HTTP Request to Gemini API (no LangChain nodes needed)
+- Code nodes for logic and parsing
 
 ## Health Checks
 
