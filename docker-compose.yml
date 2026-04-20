@@ -29,6 +29,7 @@ services:
       - N8N_LOG_LEVEL=info
       - N8N_METRICS_ENABLED=false
       - N8N_SECURE_COOKIE=false
+      - N8N_RESTRICT_FILE_ACCESS_TO=/data/rag/
     volumes:
       - n8n_data:/home/node/.n8n
       - ./rag:/data/rag:ro

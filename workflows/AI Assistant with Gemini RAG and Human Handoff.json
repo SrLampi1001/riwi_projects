@@ -1,0 +1,418 @@
+{
+  "name": "AI Assistant with Gemini RAG and Human Handoff",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 2048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        736,
+        768
+      ],
+      "id": "cdeab75b-f072-4548-8873-9caf9b9ea268",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aJxzAHwzLZO1TPrx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        832
+      ],
+      "id": "c902cf22-7bb9-46a5-8bef-d1db085d0208",
+      "name": "Email Trigger (IMAP)",
+      "alwaysOutputData": true,
+      "credentials": {
+        "imap": {
+          "id": "Bwh6IvKegiNUeAcg",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 2048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        912
+      ],
+      "id": "7b62421c-60d8-4d34-b7ea-724e7c97e9aa",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aJxzAHwzLZO1TPrx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.userInput }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant for Foreign Languages Academy Made in Colombia. Use the provided 'Vector Store Tool' to find information in the uploaded context file before answering. Answer questions about schedules, prices, levels, inscriptions, certifications, and modalities in English and Spanish.\n\nIMPORTANT INSTRUCTION: If the user refers to something that is not in the context or requires human intervention (e.g. complaints, or questions you cannot answer using the Vector Store Tool), respond EXACTLY with the string: [HANDOFF_REQUIRED]. Otherwise, answer normally based only on the context found."
+        }
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [
+        768,
+        592
+      ],
+      "id": "5e71bca0-741c-44c2-9fbe-a1846cfcc2ad"
+    },
+    {
+      "parameters": {},
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1,
+      "position": [
+        816,
+        864
+      ],
+      "id": "61859ae4-a7b6-4589-995a-d0c01bd441dd"
+    },
+    {
+      "parameters": {
+        "name": "Vector_Store_Tool",
+        "description": "Use this tool to find information about academy schedules, prices, levels, inscriptions, certifications, and modalities."
+      },
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        784
+      ],
+      "id": "0bb2f4ab-7af8-4bf6-b40e-d071aaa7b419"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook Trigger1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        256,
+        400
+      ],
+      "id": "07d27bdc-b3ce-455b-8cda-99c1c5645ba5",
+      "webhookId": "cfdc2c3e-9e4b-487c-9a12-1d59f511bb69"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "userInput",
+              "value": "={{ $json.body?.message || $json.message?.text || $json.textPlain || '' }}"
+            },
+            {
+              "name": "source",
+              "value": "={{ $node['Webhook Trigger1'] ? 'webhook' : ($node['Telegram Trigger1'] ? 'telegram' : 'email') }}"
+            },
+            {
+              "name": "replyTo",
+              "value": "={{ $json.message?.chat?.id || $json.from?.address || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Normalize Input1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        464,
+        592
+      ],
+      "id": "c77c0bbd-d48e-4394-9ef9-5d308cf02877"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.output }}",
+              "operation": "contains",
+              "value2": "[HANDOFF_REQUIRED]"
+            }
+          ]
+        }
+      },
+      "name": "Check Handoff1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        592
+      ],
+      "id": "65b9f86c-a010-4f31-8f8a-8f2e1cd29bae"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.HUMAN_SUPPORT_EMAIL }}",
+        "toEmail": "={{ $env.HUMAN_SUPPORT_EMAIL }}",
+        "subject": "Human Handoff Required",
+        "text": "=User requested help. Source: {{ $json.source }}\nReply info: {{ $json.replyTo }}\nOriginal Query: {{ $item(0).$node['Normalize Input1'].json.userInput }}",
+        "options": {}
+      },
+      "name": "Email Handoff Alert1",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        480
+      ],
+      "id": "f09e1b5b-f6ef-455f-863b-19d0b9631755",
+      "credentials": {
+        "smtp": {
+          "id": "z0Vt222ePEdWVx5T",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "messageToUser",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Respond to User1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        800
+      ],
+      "id": "cb73db95-4b92-4540-9513-b83db66b5cee"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "messageToUser",
+              "value": "I don't have that information. Please contact the academy directly. I'll send your solicitud to an assesor. "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Handoff Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        496
+      ],
+      "id": "75a809a9-f7de-49f6-953b-b9f3ba5bc709"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "name": "Telegram Trigger1",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        624
+      ],
+      "id": "f1ed6f15-b49f-4a6e-9ba3-39ffbd0004a6",
+      "webhookId": "507d6bd2-e757-4141-89ac-cab84b4483aa"
+    },
+    {
+      "parameters": {
+        "content": "## Notice\nI don't have telegram so I couldn't test the telegram route. If you use the environment variables of your own account it may work",
+        "height": 224,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "85113eed-06dc-4205-bbf3-24190a15ffaf",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Check Handoff1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Handoff1": {
+      "main": [
+        [
+          {
+            "node": "Set Handoff Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to User1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Handoff Message": {
+      "main": [
+        [
+          {
+            "node": "Email Handoff Alert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "94836f93-2a1c-4eff-8ee2-8b8ef4f9467c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8799c276bea20987942cfb22adb42ed6a3eb57a135149884f4273aaf97e8ec97"
+  },
+  "id": "8coqA1aV4POOrxJe",
+  "tags": []
+}
