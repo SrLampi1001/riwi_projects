@@ -1,0 +1,473 @@
+{
+  "name": "Academy AI Q&A with Gemini RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300],
+      "webhookId": "academy-webhook"
+    },
+    {
+      "parameters": {
+        "updates": ["message"]
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0],
+      "webhookId": "academy-telegram"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "userInput",
+              "value": "={{ $json.body?.message || $json.message?.text || $json.textPlain || $json.body?.question || $json.body?.text || '' }}"
+            },
+            {
+              "name": "source",
+              "value": "={{ $node['Webhook Trigger'] ? 'webhook' : ($node['Telegram Trigger'] ? 'telegram' : 'email') }}"
+            },
+            {
+              "name": "replyTo",
+              "value": "={{ $json.message?.chat?.id || $json.from?.id || $json.replyTo || $json.body?.chat_id || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "normalize-input",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [250, 150]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant for Foreign Languages Academy in Colombia. Answer questions ONLY based on the provided RAG context. If the answer is not in the context, respond EXACTLY with the string: [HANDOFF_REQUIRED]\n\nIMPORTANT:\n- Answer in the same language as the question\n- If the question is in Spanish, answer in Spanish\n- If the question is in English, answer in English\n- Only use information from the RAG context\n- Do not make up information"
+        }
+      },
+      "id": "ai-agent",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.4,
+      "position": [500, 150],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "google-gemini-creds",
+          "name": "Google Gemini API"
+        }
+      },
+      "inputs": {
+        "main": [
+          [
+            {
+              "node": "Normalize Input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemini-1.5-flash",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "gemini-chat",
+      "name": "Gemini Chat",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.3,
+      "position": [500, 400],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "google-gemini-creds",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionId": "={{ $json.replyTo || 'default' }}"
+      },
+      "id": "memory",
+      "name": "Window Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [500, 600]
+    },
+    {
+      "parameters": {
+        "name": "RAG Search",
+        "description": "Search academy knowledge base for schedules, prices, levels, inscriptions, certifications, and modalities"
+      },
+      "id": "rag-tool",
+      "name": "RAG Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.3,
+      "position": [750, 350]
+    },
+    {
+      "parameters": {},
+      "id": "vector-store",
+      "name": "In-Memory Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [950, 350]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/data/rag/rag_context.txt",
+        "options": {}
+      },
+      "id": "rag-loader",
+      "name": "RAG Context Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [750, 550]
+    },
+    {
+      "parameters": {
+        "model": "models/embedding-001"
+      },
+      "id": "embeddings",
+      "name": "Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [950, 550],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "google-gemini-creds",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "string": [
+            {
+              "value1": "={{ $json.output }}",
+              "operation": "contains",
+              "value2": "[HANDOFF_REQUIRED]"
+            }
+          ]
+        }
+      },
+      "id": "check-handoff",
+      "name": "Check Handoff",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [750, 150]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "messageToUser",
+              "value": "Lo siento, no tengo esa información en mi base de conocimientos. Por favor, contacta a la academia directamente para obtener más ayuda. Puedes escribir a info@academia.com o llamar al +57 XXX XXX XXXX"
+            },
+            {
+              "name": "needsHandoff",
+              "value": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-handoff-msg",
+      "name": "Set Handoff Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [950, 100]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "messageToUser",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "needsHandoff",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-normal-msg",
+      "name": "Set Normal Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [950, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.HUMAN_SUPPORT_CHAT_ID }}",
+        "text": "=New handoff request!\nSource: {{ $json.source }}\nUser: {{ $json.replyTo }}\nQuestion: {{ $('Normalize Input').first().json.userInput }}"
+      },
+      "id": "telegram-admin",
+      "name": "Telegram Admin Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1150, 50]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $env.HUMAN_SUPPORT_EMAIL }}",
+        "subject": "Human Handoff Required - Academy AI",
+        "text": "=New handoff request!\nSource: {{ $json.source }}\nUser: {{ $json.replyTo }}\nQuestion: {{ $('Normalize Input').first().json.userInput }}"
+      },
+      "id": "email-admin",
+      "name": "Email Admin Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1150, 150]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.replyTo }}",
+        "text": "={{ $json.messageToUser }}",
+        "additionalFields": {}
+      },
+      "id": "telegram-reply",
+      "name": "Reply to Telegram User",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1150, 250]
+    },
+    {
+      "parameters": {
+        "toEmail": "={{ $json.replyTo }}",
+        "subject": "Re: Your question to Foreign Languages Academy",
+        "text": "={{ $json.messageToUser }}"
+      },
+      "id": "email-reply",
+      "name": "Reply to Email User",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1150, 350]
+    },
+    {
+      "parameters": {
+        "respondWith": "responseNode",
+        "responseBody": "={\n  \"answer\": \"{{ $json.messageToUser }}\",\n  \"source\": \"{{ $json.source }}\",\n  \"success\": true\n}"
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [1150, 450]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Check Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Chat": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "RAG Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Context Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Handoff": {
+      "main": [
+        [
+          {
+            "node": "Set Handoff Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Normal Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Handoff Message": {
+      "main": [
+        [
+          {
+            "node": "Telegram Admin Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Admin Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reply to Telegram User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reply to Email User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Normal Response": {
+      "main": [
+        [
+          {
+            "node": "Reply to Telegram User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reply to Email User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "America/Bogota"
+  },
+  "staticData": null,
+  "tags": ["ai", "academy", "rag", "gemini"]
+}

@@ -47,23 +47,44 @@ For each service, create a credential in **Settings > Credentials**:
    - **Port**: `6379`
 4. **Name it**: `Redis API`
 
-#### Google Gemini API (HTTP Query Auth)
-Since n8n doesn't have a native Gemini credential type, we use HTTP Query authentication:
+#### Google Gemini API
+n8n v2 with LangChain nodes uses OAuth2 for Google Gemini. To use the `Google Gemini Chat Model` and `Embeddings Google Gemini` nodes:
 
-1. Go to **Settings > Credentials > New Credential**
-2. Select **HTTP Header Auth** (or just use `{{$env.GOOGLE_API_KEY}}` directly in nodes)
-3. For simplicity, we recommend using environment variable interpolation in HTTP Request nodes:
-   - Use `={{$env.GOOGLE_API_KEY}}` in the API key field
+**Prerequisites:**
+- A Google AI Studio API key (get it at https://aistudio.google.com/app/apikey)
 
-#### Telegram Bot (optional)
+**Setup:**
 1. Go to **Settings > Credentials > New Credential**
-2. Select **Telegram Bot Api** (if available) or use HTTP Request
-3. Enter your bot token
+2. Select **Google Gemini API**
+3. Configure:
+   - **API Key**: `={{ $env.GOOGLE_API_KEY }}` (or paste your key directly)
+   - **Name it**: `Google Gemini API`
+4. Save
+
+**For the workflow (`academy-ai-workflow-v2.json`):**
+- It expects a credential named `Google Gemini API`
+- If you named it differently, update the credential reference in the workflow nodes
+
+**Alternative: Direct API Key in Nodes**
+If credential-based auth doesn't work, you can use the HTTP Request node with:
+- URL: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $env.GOOGLE_API_KEY }}`
+
+#### Telegram Bot
+1. Go to **Settings > Credentials > New Credential**
+2. Select **Telegram Bot Api**
+3. Enter your bot token (get from @BotFather on Telegram)
+4. Save
 
 #### Email/SMTP
 1. Go to **Settings > Credentials > New Credential**
-2. Select **SMTP' (or similar, depending on n8n version)
-3. Configure your SMTP settings
+2. Select **SMTP** (or "Email (SMTP)" depending on n8n version)
+3. Configure:
+   - **Host**: `{{ $env.EMAIL_SMTP_HOST }}`
+   - **Port**: `{{ $env.EMAIL_SMTP_PORT }}`
+   - **User**: `{{ $env.EMAIL_SMTP_USER }}`
+   - **Password**: `{{ $env.EMAIL_SMTP_PASS }}`
+   - **From Email**: `{{ $env.EMAIL_FROM }}`
+4. Save
 
 ---
 
@@ -99,11 +120,18 @@ In HTTP Request nodes, use the variable selector to pick:
 | Variable | Description |
 |----------|-------------|
 | `GOOGLE_API_KEY` | Gemini API key |
+| `GEMINI_MODEL` | Gemini model to use (default: gemini-1.5-flash) |
 | `N8N_BASIC_AUTH_USER` | n8n login username |
 | `N8N_BASIC_AUTH_PASSWORD` | n8n login password |
+| `N8N_ENCRYPTION_KEY` | Encryption key for credential storage |
 | `REDIS_HOST` | Redis container hostname |
 | `REDIS_PORT` | Redis port |
 | `TELEGRAM_BOT_TOKEN` | Telegram bot token |
+| `HUMAN_SUPPORT_CHAT_ID` | Telegram chat ID for admin notifications |
+| `HUMAN_SUPPORT_EMAIL` | Email address for admin notifications |
+| `EMAIL_FROM` | From email address for outgoing emails |
+| `EMAIL_SMTP_HOST` | SMTP server hostname |
+| `EMAIL_SMTP_PORT` | SMTP server port |
 
 ---
 
@@ -133,3 +161,37 @@ In HTTP Request nodes, use the variable selector to pick:
 - **Change default passwords** - Update all `*_PASSWORD` values
 - **Redis has no authentication** - It's only accessible within the Docker network
 - **PostgreSQL credentials** - Used internally, change for production
+
+---
+
+## RAG Context File
+
+The RAG context file is mounted into the n8n container at `/data/rag/rag_context.txt`.
+
+**Location in project:** `rag/rag_context.txt`
+
+**To update the AI's knowledge base:**
+1. Edit `rag/rag_context.txt`
+2. Restart n8n: `docker compose restart n8n`
+
+**Note:** The in-memory vector store is rebuilt on every workflow execution. For production with better performance, consider using a persistent vector store (like Qdrant or Pinecone).
+
+---
+
+## Workflow Files
+
+Two workflow templates are provided:
+
+1. **`workflows/academy-ai-workflow.json`** - Basic workflow with RAG support
+2. **`workflows/academy-ai-workflow-v2.json`** - Full workflow with human handoff support
+
+**To import a workflow:**
+1. Open n8n at http://localhost:5678
+2. Go to **Settings > Workflows**
+3. Click **Import from JSON**
+4. Paste the workflow JSON or upload the file
+
+**After import:**
+1. Create the required credentials (Google Gemini API, Redis, Telegram, SMTP)
+2. Open each node that needs credential selection and pick the appropriate credential
+3. Activate the workflow
