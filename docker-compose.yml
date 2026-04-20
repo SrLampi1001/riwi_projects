@@ -16,6 +16,7 @@ services:
       - N8N_PORT=${N8N_PORT}
       - N8N_PROTOCOL=${N8N_PROTOCOL}
       - WEBHOOK_URL=${WEBHOOK_URL}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=postgres
       - DB_POSTGRESDB_PORT=5432
@@ -27,6 +28,7 @@ services:
       - N8N_DIAGNOSTICS_ENABLED=false
       - N8N_LOG_LEVEL=info
       - N8N_METRICS_ENABLED=false
+      - N8N_SECURE_COOKIE=false
     volumes:
       - n8n_data:/home/node/.n8n
       - ./rag:/data/rag:ro

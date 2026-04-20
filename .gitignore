@@ -1,9 +1,11 @@
 # ===========================================
-# Environment Files
+# Environment Files (NEVER COMMIT THESE)
 # ===========================================
 .env
 .env.local
 .env.*.local
+.env.production
+*.env
 
 # ===========================================
 # Docker

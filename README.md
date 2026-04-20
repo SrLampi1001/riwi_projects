@@ -50,7 +50,8 @@ cp .env.example .env
 
 Edit `.env` and fill in:
 
-- `OPENAI_API_KEY` - Your OpenAI API key (or use the free API)
+- `GOOGLE_API_KEY` - Get one at [Google AI Studio](https://aistudio.google.com/app/apikey)
+- `N8N_ENCRYPTION_KEY` - Generate with: `openssl rand -hex 32`
 - `TELEGRAM_BOT_TOKEN` - Your Telegram bot token
 - `EMAIL_SMTP_*` - Your email SMTP settings
 - Update passwords for security

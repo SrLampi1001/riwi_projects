@@ -1,0 +1,187 @@
+{
+  "name": "Academy AI Q&A Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "academy-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract question and source from webhook payload\nconst body = $input.first().json.body;\nconst query = body.question || body.message || body.text || '';\nconst source = body.source || 'web';\nconst userId = body.user_id || body.from?.id || 'anonymous';\nconst language = body.language || (query.toLowerCase().match(/\\b(hola|gracias|precio|horario|cuanto|cuando)\\b/) ? 'es' : 'es');\n\n// Normalize the question\nconst normalizedQuestion = query.trim().toLowerCase();\n\nreturn [{\n  json: {\n    original_question: query,\n    normalized_question: normalizedQuestion,\n    source: source,\n    user_id: userId,\n    language: language,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "parse-input",
+      "name": "Parse Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "url": "=http://redis:6379",
+        "options": {}
+      },
+      "id": "redis-connection",
+      "name": "Redis Cache",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [440, 0],
+      "credentials": {
+        "redisApi": {
+          "id": "redis-creds",
+          "name": "Redis API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "filePath": "/data/rag/rag_context.txt",
+        "options": {}
+      },
+      "id": "read-rag-context",
+      "name": "Read RAG Context",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [660, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Read RAG context from previous node\nconst ragData = $input.first().json;\nconst question = $('Parse Input').first().json.normalized_question;\n\n// Simple keyword matching to find relevant RAG sections\n// In production, use embeddings for semantic search\nconst ragContent = ragData.toString();\n\n// Extract relevant sections based on keywords\nconst keywords = {\n  'schedule': ['horario', 'schedule', 'clases', 'clase', 'hora', 'hora', 'manana', 'tarde', 'noche'],\n  'price': ['precio', 'price', 'costo', 'cuanto', 'pago', 'mensual', 'mensualidad'],\n  'level': ['nivel', 'level', 'basico', 'intermedio', 'avanzado', 'beginner', 'intermediate'],\n  'inscription': ['inscripcion', 'enrollment', 'registro', 'registrar', 'matricula'],\n  'certification': ['certificado', 'certification', 'certificado', 'examen', 'exams'],\n  'modality': ['modalidad', 'modality', 'presencial', 'online', 'virtual', 'hibrido', 'self-paced']\n};\n\nlet relevantContext = '';\n\n// Match keywords to find relevant sections\nfor (const [topic, words] of Object.entries(keywords)) {\n  if (words.some(w => question.includes(w))) {\n    relevantContext += `\\n[${topic.toUpperCase()} SECTION]\\n`;\n  }\n}\n\n// If no specific match, return general academy info\nif (!relevantContext) {\n  relevantContext = ragContent;\n}\n\nreturn [{\n  json: {\n    rag_context: ragContent,\n    relevant_sections: relevantContext,\n    question: question\n  }\n}];"
+      },
+      "id": "extract-relevant-context",
+      "name": "Extract Relevant RAG",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryParams",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{$env.GOOGLE_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "bodyJson": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"You are a helpful assistant for a Foreign Languages Academy. Answer questions ONLY based on the provided RAG context. If the answer is not in the context, say you don't have that information and suggest contacting the academy directly. Respond in the same language as the question.\\n\\nRAG Context:\\n{{ $json.rag_context }}\\n\\nQuestion: {{ $('Parse Input').first().json.original_question }}\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.3,\n    \"maxOutputTokens\": 500\n  }\n}",
+        "options": {}
+      },
+      "id": "gemini-api",
+      "name": "Gemini API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Gemini response\nconst geminiResponse = $input.first().json;\nconst questionData = $('Parse Input').first().json;\n\nlet aiResponse = '';\n\nif (geminiResponse.candidates && geminiResponse.candidates[0]?.content?.parts[0]?.text) {\n  aiResponse = geminiResponse.candidates[0].content.parts[0].text;\n} else if (geminiResponse.error) {\n  aiResponse = 'Lo siento, hubo un error al procesar tu pregunta. Por favor, intenta de nuevo o contacta a la academia directamente.';\n} else {\n  aiResponse = 'No pude generar una respuesta. Por favor, contacta a la academia para más información.';\n}\n\nreturn [{\n  json: {\n    response: aiResponse,\n    source: questionData.source,\n    user_id: questionData.user_id,\n    original_question: questionData.original_question,\n    language: questionData.language\n  }\n}];"
+      },
+      "id": "parse-ai-response",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "responseNode",
+        "responseBody": "={\n  \"answer\": \"{{ $json.response }}\",\n  \"source\": \"{{ $json.source }}\",\n  \"original_question\": \"{{ $json.original_question }}\"\n}",
+        "options": {}
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1540, 0]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Input": {
+      "main": [
+        [
+          {
+            "node": "Redis Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RAG Context": {
+      "main": [
+        [
+          {
+            "node": "Extract Relevant RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Relevant RAG": {
+      "main": [
+        [
+          {
+            "node": "Gemini API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini API": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": []
+}
