@@ -10,10 +10,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        736,
-        768
+        96,
+        -144
       ],
-      "id": "cdeab75b-f072-4548-8873-9caf9b9ea268",
+      "id": "0609c721-8b4e-4d99-b44f-52ffeae04fcc",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
@@ -29,37 +29,16 @@
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.1,
       "position": [
-        256,
-        832
+        -384,
+        -48
       ],
-      "id": "c902cf22-7bb9-46a5-8bef-d1db085d0208",
+      "id": "0936257e-e7a8-42ed-9776-3f6331c4dd65",
       "name": "Email Trigger (IMAP)",
       "alwaysOutputData": true,
       "credentials": {
         "imap": {
           "id": "Bwh6IvKegiNUeAcg",
           "name": "IMAP account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "options": {
-          "maxOutputTokens": 2048
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        1184,
-        912
-      ],
-      "id": "7b62421c-60d8-4d34-b7ea-724e7c97e9aa",
-      "name": "Google Gemini Chat Model1",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "aJxzAHwzLZO1TPrx",
-          "name": "Google Gemini(PaLM) Api account"
         }
       }
     },
@@ -74,10 +53,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1,
       "position": [
-        768,
-        592
+        176,
+        -320
       ],
-      "id": "5e71bca0-741c-44c2-9fbe-a1846cfcc2ad"
+      "id": "2bbde9e5-8d8d-40b5-87fa-b09713979d6c"
     },
     {
       "parameters": {},
@@ -85,24 +64,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1,
       "position": [
-        816,
-        864
+        240,
+        -96
       ],
-      "id": "61859ae4-a7b6-4589-995a-d0c01bd441dd"
-    },
-    {
-      "parameters": {
-        "name": "Vector_Store_Tool",
-        "description": "Use this tool to find information about academy schedules, prices, levels, inscriptions, certifications, and modalities."
-      },
-      "name": "Vector Store Tool",
-      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
-      "typeVersion": 1,
-      "position": [
-        1040,
-        784
-      ],
-      "id": "0bb2f4ab-7af8-4bf6-b40e-d071aaa7b419"
+      "id": "00542389-d33d-451f-b2f1-7facaf0f7c19"
     },
     {
       "parameters": {
@@ -115,10 +80,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        256,
-        400
+        -384,
+        -512
       ],
-      "id": "07d27bdc-b3ce-455b-8cda-99c1c5645ba5",
+      "id": "5c709702-cb42-45d8-a200-9c0ac8d51a83",
       "webhookId": "cfdc2c3e-9e4b-487c-9a12-1d59f511bb69"
     },
     {
@@ -146,10 +111,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 1,
       "position": [
-        464,
-        592
+        -176,
+        -320
       ],
-      "id": "c77c0bbd-d48e-4394-9ef9-5d308cf02877"
+      "id": "c86c8c4b-a1d9-493d-bafa-14540c78ecf3"
     },
     {
       "parameters": {
@@ -167,10 +132,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        1264,
-        592
+        544,
+        -320
       ],
-      "id": "65b9f86c-a010-4f31-8f8a-8f2e1cd29bae"
+      "id": "3db6105c-8d41-441d-bc80-9cbad056bf85"
     },
     {
       "parameters": {
@@ -184,10 +149,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 1,
       "position": [
-        1680,
-        480
+        928,
+        -432
       ],
-      "id": "f09e1b5b-f6ef-455f-863b-19d0b9631755",
+      "id": "da84126f-70aa-4199-ad5e-b410a94fc642",
       "credentials": {
         "smtp": {
           "id": "z0Vt222ePEdWVx5T",
@@ -212,10 +177,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 1,
       "position": [
-        1504,
-        800
+        720,
+        -192
       ],
-      "id": "cb73db95-4b92-4540-9513-b83db66b5cee"
+      "id": "8ce342d8-91e1-4d86-b285-399dea2c5e62"
     },
     {
       "parameters": {
@@ -234,10 +199,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 1,
       "position": [
-        1456,
-        496
+        720,
+        -416
       ],
-      "id": "75a809a9-f7de-49f6-953b-b9f3ba5bc709"
+      "id": "cb70e7c5-c352-49e5-9456-050f45d0f742"
     },
     {
       "parameters": {
@@ -250,10 +215,10 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1,
       "position": [
-        240,
-        624
+        -448,
+        -288
       ],
-      "id": "f1ed6f15-b49f-4a6e-9ba3-39ffbd0004a6",
+      "id": "d26d13fd-6ab8-4d0e-9d13-71c50ee4cd82",
       "webhookId": "507d6bd2-e757-4141-89ac-cab84b4483aa"
     },
     {
@@ -264,12 +229,25 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -208,
-        576
+        -848,
+        -336
       ],
       "typeVersion": 1,
-      "id": "85113eed-06dc-4205-bbf3-24190a15ffaf",
+      "id": "3b9ebe17-75c9-4219-b701-044010397ac5",
       "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "filePath": "/data/rag/rag_context.txt"
+      },
+      "id": "f81e5aa6-beca-49ae-8dbb-16cb44fc0a89",
+      "name": "Read RAG Context1",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -320
+      ]
     }
   ],
   "pinData": {},
@@ -291,17 +269,6 @@
           {
             "node": "Normalize Input1",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Gemini Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Vector Store Tool",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -329,17 +296,6 @@
         ]
       ]
     },
-    "Vector Store Tool": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Webhook Trigger1": {
       "main": [
         [
@@ -355,7 +311,7 @@
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Read RAG Context1",
             "type": "main",
             "index": 0
           }
@@ -396,6 +352,17 @@
         [
           {
             "node": "Normalize Input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RAG Context1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
             "type": "main",
             "index": 0
           }

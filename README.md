@@ -157,3 +157,9 @@ After verifying the AI responses work correctly:
 1. Set up the admin panel for human intervention on unanswered questions
 2. Configure web form UI
 3. Add more RAG context for specific topics
+
+## Errors
+
+- n8n: http://localhost:5678/
+If nothing is working, check the n8n UI, and see if the flow exists and is active.
+If not, manually import the workflow from `workflows/workflow.json`.
