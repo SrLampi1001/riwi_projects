@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const TOOL_ICONS = {
   dictionary_lookup: '📖',
@@ -70,11 +72,95 @@ export function MessageBubble({ message }) {
           color: 'var(--text-primary)',
           fontSize: '15px',
           lineHeight: '1.6',
-          whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
         }}
       >
-        {message.content}
+        {isUser ? (
+          message.content
+        ) : (
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              p: ({ children }) => (
+                <span style={{ display: 'inline', lineHeight: '1.7' }}>{children}</span>
+              ),
+              strong: ({ children }) => (
+                <strong style={{ fontWeight: '700', color: 'var(--accent)' }}>{children}</strong>
+              ),
+              em: ({ children }) => (
+                <em style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>{children}</em>
+              ),
+              code: ({ children, className }) => {
+                const isInline = !className;
+                return isInline ? (
+                  <code
+                    style={{
+                      background: 'rgba(255,255,255,0.08)',
+                      borderRadius: '4px',
+                      padding: '1px 5px',
+                      fontSize: '13px',
+                      fontFamily: 'monospace',
+                      color: '#a5d6ff',
+                    }}
+                  >
+                    {children}
+                  </code>
+                ) : (
+                  <code
+                    style={{
+                      display: 'block',
+                      background: '#1e1e2e',
+                      borderRadius: '8px',
+                      padding: '12px 16px',
+                      margin: '8px 0',
+                      overflowX: 'auto',
+                      fontSize: '13px',
+                      fontFamily: 'monospace',
+                      color: '#cdd6f4',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    {children}
+                  </code>
+                );
+              },
+              pre: ({ children }) => <>{children}</>,
+              ul: ({ children }) => (
+                <ul style={{ margin: '6px 0', paddingLeft: '20px' }}>{children}</ul>
+              ),
+              ol: ({ children }) => (
+                <ol style={{ margin: '6px 0', paddingLeft: '20px' }}>{children}</ol>
+              ),
+              li: ({ children }) => (
+                <li style={{ marginBottom: '3px' }}>{children}</li>
+              ),
+              hr: () => (
+                <hr
+                  style={{
+                    border: 'none',
+                    borderTop: '1px solid var(--border)',
+                    margin: '12px 0',
+                  }}
+                />
+              ),
+              blockquote: ({ children }) => (
+                <blockquote
+                  style={{
+                    borderLeft: '3px solid var(--accent)',
+                    margin: '8px 0',
+                    paddingLeft: '12px',
+                    color: 'var(--text-secondary)',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {children}
+                </blockquote>
+              ),
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
+        )}
       </div>
 
       <span

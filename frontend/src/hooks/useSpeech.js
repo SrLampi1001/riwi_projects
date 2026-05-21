@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { detectBrowser, getSttSupport, STT_MESSAGES } from '../utils/browserDetect';
+import { cleanTextForTTS } from '../utils/textCleaner';
 
 /**
  * useSpeech — wraps the browser Web Speech API
@@ -96,17 +97,18 @@ export function useSpeech() {
       }
       synthRef.current.cancel();
 
+      const cleanText = cleanTextForTTS(text);
       const voices = synthRef.current.getVoices();
       const langPrefix = lang.split('-')[0];
 
       if (voices.length === 0 || !voicesLoaded) {
         if (voices.length === 0) {
           console.warn('[useSpeech] No voices available yet, queueing TTS');
-          pendingTextRef.current = text;
+          pendingTextRef.current = cleanText;
           pendingLangRef.current = lang;
         } else {
           console.warn('[useSpeech] Voices not yet loaded, queueing TTS');
-          pendingTextRef.current = text;
+          pendingTextRef.current = cleanText;
           pendingLangRef.current = lang;
         }
         return;
@@ -125,7 +127,7 @@ export function useSpeech() {
         ) ||
         voices.find((v) => v.lang.startsWith(langPrefix));
 
-      const utterance = new SpeechSynthesisUtterance(text);
+      const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.lang = lang;
       utterance.rate = 0.95;
       utterance.pitch = 1.05;
