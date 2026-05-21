@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { detectBrowser, getSttSupport, STT_MESSAGES } from '../utils/browserDetect';
 
 /**
@@ -18,10 +18,15 @@ import { detectBrowser, getSttSupport, STT_MESSAGES } from '../utils/browserDete
  *   sttLevel                 — 'full' | 'partial' | 'none'
  *   browser                  — detected browser name
  *   sttMessage               — tooltip/banner text (if sttLevel !== 'full')
+ *   voicesLoaded             — true once voiceschanged has fired at least once
  */
 export function useSpeech() {
   const synthRef = useRef(window.speechSynthesis);
   const recognitionRef = useRef(null);
+
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
+  const pendingTextRef = useRef(null);
+  const pendingLangRef = useRef(null);
 
   // ─── Browser & Support Detection ──────────────────────────────────────────
   const browser = detectBrowser();
@@ -31,34 +36,104 @@ export function useSpeech() {
     ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) &&
     sttLevel !== 'none';
 
-  // Message to surface in the UI when STT is unavailable or limited
   const sttMessage = STT_MESSAGES[browser] ?? null;
+
+  // ─── Voice Loading ─────────────────────────────────────────────────────────
+  // Voices load asynchronously; wait for voiceschanged before attempting TTS
+  useEffect(() => {
+    if (!isSupported) return;
+
+    const loadVoices = () => {
+      setVoicesLoaded(true);
+      if (pendingTextRef.current !== null) {
+        const text = pendingTextRef.current;
+        const lang = pendingLangRef.current ?? 'en-US';
+        pendingTextRef.current = null;
+        pendingLangRef.current = null;
+        synthRef.current.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 0.95;
+        utterance.pitch = 1.05;
+        const voices = synthRef.current.getVoices();
+        const langPrefix = lang.split('-')[0];
+        const preferred =
+          voices.find(
+            (v) =>
+              v.lang.startsWith(langPrefix) &&
+              !v.localService &&
+              v.name.includes('Google')
+          ) ||
+          voices.find(
+            (v) => v.lang.startsWith(langPrefix) && !v.localService
+          ) ||
+          voices.find((v) => v.lang.startsWith(langPrefix));
+        if (preferred) utterance.voice = preferred;
+        synthRef.current.speak(utterance);
+      }
+    };
+
+    const synth = synthRef.current;
+    if (synth.getVoices().length > 0) {
+      setVoicesLoaded(true);
+      return;
+    }
+    synth.addEventListener('voiceschanged', loadVoices, { once: true });
+    return () => synth.removeEventListener('voiceschanged', loadVoices);
+  }, [isSupported]);
 
   // ─── TTS ──────────────────────────────────────────────────────────────────
   /**
    * Speak text aloud using the browser TTS engine.
    * Picks a Spanish or English voice depending on the target locale.
+   * If voices haven't loaded yet, queues the text and speaks once voices are ready.
    */
   const speak = useCallback(
     (text, lang = 'en-US') => {
-      if (!isSupported) return;
+      if (!isSupported) {
+        console.warn('[useSpeech] TTS not supported in this browser');
+        return;
+      }
       synthRef.current.cancel();
+
+      const voices = synthRef.current.getVoices();
+      const langPrefix = lang.split('-')[0];
+
+      if (voices.length === 0 || !voicesLoaded) {
+        if (voices.length === 0) {
+          console.warn('[useSpeech] No voices available yet, queueing TTS');
+          pendingTextRef.current = text;
+          pendingLangRef.current = lang;
+        } else {
+          console.warn('[useSpeech] Voices not yet loaded, queueing TTS');
+          pendingTextRef.current = text;
+          pendingLangRef.current = lang;
+        }
+        return;
+      }
+
+      // Prefer remote/cloud voices for naturalness; fall back to any matching voice
+      const preferred =
+        voices.find(
+          (v) =>
+            v.lang.startsWith(langPrefix) &&
+            !v.localService &&
+            v.name.includes('Google')
+        ) ||
+        voices.find(
+          (v) => v.lang.startsWith(langPrefix) && !v.localService
+        ) ||
+        voices.find((v) => v.lang.startsWith(langPrefix));
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang;
       utterance.rate = 0.95;
       utterance.pitch = 1.05;
-
-      const voices = synthRef.current.getVoices();
-      const preferred =
-        voices.find(
-          (v) => v.lang.startsWith(lang.split('-')[0]) && v.localService === false
-        ) || voices.find((v) => v.lang.startsWith(lang.split('-')[0]));
-
       if (preferred) utterance.voice = preferred;
+
       synthRef.current.speak(utterance);
     },
-    [isSupported]
+    [isSupported, voicesLoaded]
   );
 
   const stopSpeaking = useCallback(() => {
@@ -122,5 +197,6 @@ export function useSpeech() {
     sttLevel,
     browser,
     sttMessage,
+    voicesLoaded,
   };
 }
