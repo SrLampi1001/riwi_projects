@@ -1,0 +1,7 @@
+#env
+.env
+#node
+**/node_modules/
+#skills
+.agents/
+.agents/skills/
