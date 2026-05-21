@@ -1,6 +1,26 @@
 import React, { useState } from 'react';
 
-export function InputBar({ onSend, isLoading, onMicClick, isListening, isSttSupported }) {
+/**
+ * InputBar — bottom input area.
+ *
+ * Props:
+ *   onSend(text)        — called when the user submits a message
+ *   isLoading           — disables input while agent is thinking
+ *   onMicClick()        — toggles STT listening
+ *   isListening         — true while microphone is active
+ *   isSttSupported      — true if SpeechRecognition is available and usable
+ *   sttLevel            — 'full' | 'partial' | 'none'
+ *   sttMessage          — tooltip text when STT is unavailable (Firefox) or limited
+ */
+export function InputBar({
+  onSend,
+  isLoading,
+  onMicClick,
+  isListening,
+  isSttSupported,
+  sttLevel,
+  sttMessage,
+}) {
   const [value, setValue] = useState('');
 
   const handleSend = () => {
@@ -17,6 +37,18 @@ export function InputBar({ onSend, isLoading, onMicClick, isListening, isSttSupp
     }
   };
 
+  // ─── Mic button state derived from sttLevel ────────────────────────────────
+  // 'full'    → enabled, active
+  // 'partial' → enabled, but a warning banner shows above
+  // 'none'    → disabled with tooltip (button always visible)
+  const micDisabled = sttLevel === 'none';
+  const showMicButton = true; // always render; never hidden per spec
+  const micTitle = micDisabled
+    ? sttMessage || 'Voice input is not supported in this browser.'
+    : isListening
+    ? 'Stop listening'
+    : 'Speak your message';
+
   return (
     <div
       style={{
@@ -28,33 +60,46 @@ export function InputBar({ onSend, isLoading, onMicClick, isListening, isSttSupp
         alignItems: 'flex-end',
       }}
     >
-      {/* Mic button (STT) */}
-      {isSttSupported && (
+      {/* ── Mic Button ─────────────────────────────────────────────────────── */}
+      {showMicButton && (
         <button
-          onClick={onMicClick}
-          title={isListening ? 'Stop listening' : 'Speak your message'}
+          onClick={micDisabled ? undefined : onMicClick}
+          title={micTitle}
+          disabled={micDisabled}
+          aria-label={micTitle}
           style={{
             width: '44px',
             height: '44px',
             borderRadius: '12px',
-            border: '1px solid var(--border)',
-            background: isListening ? 'rgba(192,132,252,0.15)' : 'var(--surface-2)',
-            color: isListening ? 'var(--accent)' : 'var(--text-secondary)',
-            cursor: 'pointer',
+            border: micDisabled
+              ? '1px solid var(--border)'
+              : '1px solid var(--border)',
+            background: micDisabled
+              ? 'var(--surface-2)'
+              : isListening
+              ? 'rgba(192,132,252,0.15)'
+              : 'var(--surface-2)',
+            color: micDisabled
+              ? 'var(--text-muted)'
+              : isListening
+              ? 'var(--accent)'
+              : 'var(--text-secondary)',
+            cursor: micDisabled ? 'not-allowed' : 'pointer',
             fontSize: '18px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
             transition: 'all 0.2s ease',
-            animation: isListening ? 'pulse 1.2s ease infinite' : 'none',
+            animation: isListening && !micDisabled ? 'pulse 1.2s ease infinite' : 'none',
+            opacity: micDisabled ? 0.45 : 1,
           }}
         >
           🎤
         </button>
       )}
 
-      {/* Text input */}
+      {/* ── Text Input ─────────────────────────────────────────────────────── */}
       <textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -82,7 +127,7 @@ export function InputBar({ onSend, isLoading, onMicClick, isListening, isSttSupp
         disabled={isLoading}
       />
 
-      {/* Send button */}
+      {/* ── Send Button ────────────────────────────────────────────────────── */}
       <button
         onClick={handleSend}
         disabled={isLoading || !value.trim()}
@@ -92,8 +137,10 @@ export function InputBar({ onSend, isLoading, onMicClick, isListening, isSttSupp
           height: '44px',
           borderRadius: '12px',
           border: 'none',
-          background: isLoading || !value.trim() ? 'var(--surface-2)' : 'var(--accent)',
-          color: isLoading || !value.trim() ? 'var(--text-muted)' : '#0f0e11',
+          background:
+            isLoading || !value.trim() ? 'var(--surface-2)' : 'var(--accent)',
+          color:
+            isLoading || !value.trim() ? 'var(--text-muted)' : '#0f0e11',
           cursor: isLoading || !value.trim() ? 'not-allowed' : 'pointer',
           fontSize: '18px',
           display: 'flex',
