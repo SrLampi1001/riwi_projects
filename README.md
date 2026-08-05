@@ -21,7 +21,7 @@ Each project is inside its own separated folder, and have a `project.yml` file t
 If you want to clone this repository, I would recommend:
 
 ```bash
-    git clone --branch <branch-project> --single-branch https://github.com/SrLampi1001/riwi_projects.git```
+    git clone --branch <branch-project> --single-branch https://github.com/SrLampi1001/riwi_projects.git
 ```
 
 Instead of cloning every project in main, clone the specific branch dedicated to the project, that way you won't end with more projects than you care about. 
