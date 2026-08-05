@@ -25,3 +25,13 @@ If you want to clone this repository, I would recommend:
 ```
 
 Instead of cloning every project in main, clone the specific branch dedicated to the project, that way you won't end with more projects than you care about. 
+
+### Tags
+There are tags in each project that will tell you if projec state.
+
+| Tag | Meaning |
+| --- | ------- |
+| Complete | The project is complete as per the requirements and doesn't need any improvement | 
+| Incomplete | The project doesn't fit the full requirements of the assignment and needs improvement | 
+| Unsatisfactory | The project fits the full requirements of the assigment but can be improved | 
+| In Progress | The project has versions, and can be actively worked on | 
