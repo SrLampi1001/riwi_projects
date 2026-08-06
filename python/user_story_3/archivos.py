@@ -1,6 +1,6 @@
 import csv
 import os
-import input_validation
+import input_validation as input_validation
 def guardar_csv(inventario, ruta):
     """
     Formato de archivo: CSV con separador coma y encabezado: nombre, precio, cantidad

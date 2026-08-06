@@ -1,6 +1,6 @@
-import archivos 
-import servicios
-import input_validation
+import archivos as archivos 
+import servicios as servicios
+import input_validation as input_validation
 inventario = [] #variable temporal, carga csv
 def menu():
     """
