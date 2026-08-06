@@ -1,27 +1,50 @@
-# Riwi Projects
-This repository contains all small and medium size projects made in Riwi outside organizations.
-Organizations works are implemented as `git subtrees` inside this repository, this keeps the commit history separated while also allowing to show my contributions to those repositories
+# Mini-Project Python
+Riwi Assignment.
+This mini-project is composed of 10 small python scripts.
 
-Bigger repositories will be all connected via `git subtrees`, if you want to explore this files more comfortably, you can see the [webpage](https://SrLampi1001@github.io/riwi_projects) to look the file more freely. 
+## Requirements
 
-> [!NOTE]
-> *Note to self:* Should think about creating a free Vercel backend for services like script files overview and terminal view (This would require a heavy amount of security)
+- [Assignment](https://gist.github.com/JARV005/f55ea356627432c56c59a9e1a6616ff6)
 
-## General tech
-These projects are mainly composed of basic Python and Static websites with JavaScript + HTML + CSS
-There are backend repositories mainly with Node.js and Express.js.
+### 1. Virtual Library System *(Done)*
+* **Description:** Manage a small library.
+* **Requirements:** View available books, add new books, check out books (change status to "borrowed"), return books, and view the borrowing history.
 
-There are also some works that use frameworks like docusaurus (a documentation framework mainly). There will be new additions until Riwi finalization date that comes up on August 24th, 2026. 
+### 2. Daily Task Manager — To-Do List *(Done)*
+* **Description:** Simulate a task management app.
+* **Requirements:** Add tasks, mark tasks as completed, delete tasks, display all tasks (pending and completed), and exit the system.
 
-- Riwi prioritized the use of Scrum methodology for the project. So projects are mainly created around Scrum ceremonies and workflow. 
+### 3. Calculator with History *(Done)*
+* **Description:** Perform basic mathematical operations with a history log.
+* **Requirements:** Add, subtract, multiply, and divide; show the last operation's result; display the full history; and clear the history.
 
-## Should know
-Each project is inside its own separated folder, and have a `project.yml` file that defines metadata required for indexing and classification. 
+### 4. Mini E-Commerce Store
+* **Description:** Simulate a small online store where users can purchase items.
+* **Requirements:** Display a product catalog with prices, add products to a cart, view the total cost, and finalize the purchase.
 
-If you want to clone this repository, I would recommend:
+### 5. Recipe System
+* **Description:** Store and display recipes.
+* **Requirements:** Add a recipe with ingredients and steps, search for a recipe by name, list all recipes, and delete a recipe.
 
-```bash
-    git clone --branch <branch-project> --single-branch https://github.com/SrLampi1001/riwi_projects.git
-```
+### 6. Bank Account Manager
+* **Description:** Manage multiple bank accounts.
+* **Requirements:** Create a new account (name and initial balance), deposit or withdraw money from a selected account, check the balance, and view all created accounts.
 
-Instead of cloning every project in main, clone the specific branch dedicated to the project, that way you won't end with more projects than you care about. 
+### 7. Movie Theater Reservation System
+* **Description:** Book seats for a movie.
+* **Requirements:** Display available seats, reserve a seat (change status to "occupied"), cancel a reservation, and view the updated seating map.
+
+### 8. Student Registry
+* **Description:** Basic student management system.
+* **Requirements:** Register students (name, age, grade), search for a student by name, display the overall class average, and show the complete student list.
+
+### 9. Game: Guess the Number
+* **Description:** The system generates a random number from 1 to 100 for the player to guess.
+* **Requirements:** Guess until correct or surrender, count the number of attempts, give higher/lower hints, and restart the game.
+
+### 10. Personal Expense Tracker
+* **Description:** Record and analyze daily expenses.
+* **Requirements:** Register an expense (name, amount, category), display total money spent, show expenses grouped by category, and delete an expense.
+
+## Owner
+Santiago Sánchez Ruiz
