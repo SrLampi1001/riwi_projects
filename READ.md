@@ -1,10 +1,8 @@
-# User story 3
-Riwi assigment. Third user story.
+# Riwi Projects
+This repository contains all small and medium size projects made in Riwi outside organizations.
+Organizations works are implemented as `git subtrees` inside this repository, this keeps the commit history separated while also allowing to show my contributions to those repositories
 
-## Requirements
-- Store and load the inventory from CSV files to preserve data in sessions, share them and query bussiness statistics. 
-- Apply lists, dicts and tuples along with modules and python functions to create a modular and persitent inventory.
-- CRUD, statistics and read/write csv files with validation and error management.
+Bigger repositories will be all connected via `git subtrees`, if you want to explore this files more comfortably, you can see the [webpage](https://SrLampi1001@github.io/riwi_projects) to look the file more freely. 
 
 > [!NOTE]
 > *Note to self:* Should think about creating a free Vercel backend for services like script files overview and terminal view (This would require a heavy amount of security)
