@@ -35,3 +35,4 @@ There are tags in each project that will tell you if projec state.
 | Incomplete | The project doesn't fit the full requirements of the assignment and needs improvement | 
 | Unsatisfactory | The project fits the full requirements of the assigment but can be improved | 
 | In Progress | The project has versions, and can be actively worked on | 
+>>>>>>> consolidation-branch:READ.md
