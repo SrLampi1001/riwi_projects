@@ -129,16 +129,21 @@ def operar_minimo(lista_numeros): #función para resolver operacines sin parente
         return lista_numeros[0]
     
 def mostrar_historial(): #función para mostrar el historial de operaciones
-    print(historial_operaciones)
     if len(historial_operaciones)==0:
         print("\nhistorial vacío")
         return
     for i in range(len(historial_operaciones)):
-        print(f"\n Operación numero {i}: {historial_operaciones[i]}")
+        print(f"\nOperacion:{historial_operaciones[i]["Operacion"]} \nResultado: {historial_operaciones[i]["Resultado"]}\n")
 
 def eliminar_historial(): #función para eliminar el historial de operaciones
     global historial_operaciones
-    historial_operaciones = []
+    historial_operaciones.clear()
+
+def guardar_historial(string:str, rs:str) -> None:
+    historial_operaciones.append({
+        "Operacion":string,
+        "Resultado":rs
+    })
 
 mensaje = """
 Bienvenido al Menú de la calculadora:
@@ -162,7 +167,9 @@ while True:
         break
     else:
         list, max = extraer_numeros(bienvenida)
-        print(operar(list, max))
+        resultado = operar(list, max)
+        guardar_historial(bienvenida, resultado)
+        print(resultado)
     bienvenida = input("ingrese un valor:\n")
 #print(operar_minimo([15,"+",68.2,"/",355,"*",888,"-",98]))
 #print(f"resultado de 15+68.2/355*888-98 = {15+68.2/355*888-98}")
