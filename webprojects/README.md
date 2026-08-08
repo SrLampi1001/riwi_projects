@@ -7,3 +7,5 @@ Backend only projects aren't part of the webpages collection, only if they have 
 ## Index
 - [Form with only HTML and CSS](./form_only_css_html/README.md)
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/form_only_css_html]
+- [Assessment test HTML and CSS](./assessment_test_2/)
+    > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/assessment_test_2]

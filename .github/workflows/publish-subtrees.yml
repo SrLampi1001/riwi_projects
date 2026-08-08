@@ -51,3 +51,5 @@ jobs:
       - name: Push HTML and CSS Form
         run: git subtree push --prefix=webprojects/form_only_css_html origin project/web/form_only_css_html && echo "No changes or error on HTML and CSS form"
       
+      - name: Push HTML and CSS assessment test
+        run: git subtree push --prefix=webprojects/assessment_test_2 origin project/web/assessment_test_2 && echo "No changes or error on Assessment test 2"
