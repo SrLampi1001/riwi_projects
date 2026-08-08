@@ -1,8 +1,9 @@
 # Riwi Projects
 This repository contains all small and medium size projects made in Riwi outside organizations.
-Organizations works are implemented as `git subtrees` inside this repository, this keeps the commit history separated while also allowing to show my contributions to those repositories
+`git subtrees` are the main project distribution and organization on the projects, this keeps the commit history separated while also allowing to show my contributions to those repositories
+Organizations works and big projects (worth their own separate repository) are implemented as `git subtrees` with external links, the small projects are implemented as `sub trees` too but their links point to this same repo dedicated branch. 
 
-Bigger repositories will be all connected via `git subtrees`, if you want to explore this files more comfortably, you can see the [webpage](https://SrLampi1001@github.io/riwi_projects) to look the file more freely. 
+If you want to explore this files more comfortably, you can see the [webpage](https://SrLampi1001@github.io/riwi_projects) to look the file more freely.  <!-- Soon -->
 
 > [!NOTE]
 > *Note to self:* Should think about creating a free Vercel backend for services like script files overview and terminal view (This would require a heavy amount of security)
@@ -27,7 +28,7 @@ If you want to clone this repository, I would recommend:
 Instead of cloning every project in main, clone the specific branch dedicated to the project, that way you won't end with more projects than you care about. 
 
 ### Tags
-There are tags in each project that will tell you if projec state.
+There are tags in each project that will tell you the project state.
 
 | Tag | Meaning |
 | --- | ------- |
