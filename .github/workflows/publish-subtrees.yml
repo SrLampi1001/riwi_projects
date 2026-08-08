@@ -70,3 +70,5 @@ jobs:
       - name: Push assessment test 3 simulacrum
         run: git subtree push --prefix=webprojects/assessment_test_3_simulacrum origin project/web/assessment_test_3_simulacrum && echo "No changes or error on Assessment test 3 simulacrum with JavaScript"
       
+      - name: Push assessment test 3
+        run: git subtree push --prefix=webprojects/assessment_test_3 origin project/web/assessment_test_3 && echo "No changes or error on Assessment test 3 (module 3)"
