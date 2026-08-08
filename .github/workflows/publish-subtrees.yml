@@ -38,4 +38,7 @@ jobs:
       #  run: git subtree push --prefix=python/workshop_2 origin project/python/workshop_2 && echo "No changes or error on workshop_2"
       
       - name: Push python mini projects
-        run: git subtree push --prefix=python/mini-projects origin project/python/mini-projects && echo "No changes or error on mini projects"
+        run: git subtree push --prefix=python/mini-projects origin project/python/mini-projects && echo "No changes or error on python mini projects"
+      
+      - name: Push python grades management workshop
+        run: git subtree push --prefix=python/grades_management_workshop origin project/python/grades_management_workshop && echo "No changes or error on python grades management workshop"
