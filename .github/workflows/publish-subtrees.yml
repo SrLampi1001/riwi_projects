@@ -46,8 +46,9 @@ jobs:
       - name: Push python assessment test module 1 simulacrum
         run: git subtree push --prefix=python/assessment_test_1_simulacrum origin project/python/assessment_test_1_simulacrum && echo "No changes or error on python assesment test 1 simulation"
 
-      # - name: Push python assessment test module 1
-      #  run: git subtree push --prefix=python/assessment_test_1_simulacrum origin project/python/assessment_test_1_simulacrum && "No changes or errors on python assessment test 1"
+      - name: Push python assessment test module 1
+        run: git subtree push --prefix=python/assessment_test_1 origin project/python/assessment_test_1 && "No changes or errors on python assessment test 1"
+      
       - name: Push HTML and CSS Form
         run: git subtree push --prefix=webprojects/form_only_css_html origin project/web/form_only_css_html && echo "No changes or error on HTML and CSS form"
       
