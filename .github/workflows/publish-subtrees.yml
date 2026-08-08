@@ -56,3 +56,6 @@ jobs:
       
       - name: Push User story 4 (Module 3, 1)
         run: git subtree push --prefix=webprojects/user_story_4 origin project/web/user_story_4 && echo "No changes or error on User Story 4, Module 3-1"
+      
+      - name: Push Simple Storage (JSON)
+        run: git subtree push --prefix=webprojects/simple_storage origin project/web/user_story_4 && echo "No changes or error on Simple Storage (JSON) with JavaScript"

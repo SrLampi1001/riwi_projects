@@ -11,3 +11,5 @@ Backend only projects aren't part of the webpages collection, only if they have 
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/assessment_test_2]
 - [User story 4](./user_story_4/README.md)
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/user_story_4]
+- [Simple Storage](./simple_storage/README.md)
+    > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/simple_storage]

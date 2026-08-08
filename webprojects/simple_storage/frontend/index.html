@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Storage</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <div class="container-2">
+        <div class="container">
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name" placeholder="Ingrese su nombre" required>
+            <label for="last_name">Last Name:</label>
+            <input type="text" name="last_name" id="last_name" placeholder="Ingrese su apellido" required>
+            <button type="button" id="saveButton">Guardar</button>
+            <span class="alert hidden">Por favor, complete ambos campos.</span>
+        </div>
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <script src="./script.js"></script>
+    <script>
+        window.addEventListener("beforeunload", () => {
+    console.trace("RELOAD DETECTADO");
+    });
+
+    </script>
+</body>
+</html>
