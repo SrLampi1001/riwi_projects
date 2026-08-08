@@ -14,3 +14,5 @@ They are mostly made during the training first module and are the fundamentals, 
     > Branch: [https://github.com/SrLampi1001/riwi_projects/tree/project/python/workshop_1]
 - [Python module 1 Workshop 2](./workshop_2/README.md)
     > Branch: [https://github.com/SrLampi1001/riwi_projects/tree/project/python/workshop_2]
+- [Python module 1 mini projects(incomplete)](./mini-projects/README.md)
+    > Branch: [https://github.com/SrLampi1001/riwi_projects/tree/project/python/mini-projects]
