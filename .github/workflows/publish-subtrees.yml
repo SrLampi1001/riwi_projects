@@ -42,3 +42,7 @@ jobs:
       
       - name: Push python grades management workshop
         run: git subtree push --prefix=python/grades_management_workshop origin project/python/grades_management_workshop && echo "No changes or error on python grades management workshop"
+
+      - name: Push python assessment test module 1 simulacrum
+        run: git subtree push --prefix=python/assessment_test_1_simulacrum origin project/python/assessment_test_1_simulacrum && echo "No changes or error on python assesment test 1 simulation"
+      
