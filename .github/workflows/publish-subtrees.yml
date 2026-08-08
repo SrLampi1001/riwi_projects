@@ -63,4 +63,7 @@ jobs:
       
       - name: Push User story 5
         run: git subtree push --prefix=webprojects/user_story_5 origin project/web/user_story_5 && echo "No changes or error on User story 5 with JavaScript"
+
+      - name: Push KFC frontend
+        run: git subtree push --prefix=webprojects/kfc origin project/web/kfc && echo "No changes or error on KFC simple Frontend with JavaScript"
       

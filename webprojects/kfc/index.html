@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFC</title>
+    <link href="./styles/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="shortcut icon" href="./media/favicon.ico" type="image/x-icon">
+    <script src="script/sign_in_verification.js"></script> <!-- Returns to sig_in if not sessionStorage email -->
+</head>
+<body id="body">
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <img class="mb-3" src="./media/Logo.png" width="400px" alt="logo.png" title="logo-kfc.png">
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <select id="select_idioma" class="form-select">
+                        <option id="sele" selected="selected" disabled="disabled">Idioma</option>
+                        <option id="Espa" value="es">Español</option>
+                        <option id="ingl" value="en">Ingles</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <select id="select_theme" class="form-select">
+                        <option id="cambi" selected="selected" disabled="disabled">Tema</option>
+                        <option id="rainbow" value="rainbow">Rainbow</option>
+                        <option id="lig" value="light">Claro</option>
+                        <option id="dar" value="dark">Oscuro</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        </header>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-1.webp" class="card-img-top" alt="BBQ_crunch" title="Haburguesa BBQ Crunch">
+                        <div class="card-body">
+                            <h5 class="card-title">8.900</h5>
+                            <h5 class="card-title">BBQ Crunch</h5>
+                            <p id="hambu1" class="card-text">1 Sandwich BBQ Crunch (1 Filete de pollo apanado)</p>                            
+                        </div>
+                        <p class="p-3">
+                            <a id="compra1" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-2.webp" class="card-img-top" alt="Kentucky" title="Hamburguesa Kentucky Sandwich">
+                        <div class="card-body">
+                            <h5 class="card-title">15.900</h5>
+                            <h5 class="card-title">Kentucky Sandwich</h5>
+                            <p id="hambu2" class="card-text">1 Kentucky hamburguesa / Sandwich(1 Filete de pechuga de pollo apanado, pepinillos,...)</p>
+                        </div>
+                        <p class="p-3">
+                            <a id="compra2" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-3.webp" class="card-img-top" alt="Combo_BBQ_Crunch" title="Combo Hamburguesa BBQ Crunch">
+                        <div class="card-body">
+                            <h5 class="card-title">15.900</h5>
+                            <h5 class="card-title">Combo BBQ Crunch</h5>
+                            <p id="hambu3" class="card-text">1 Sandwich BBQ Crunch (1 Filete de pollo apanado) + 1 Papa Pequeña + 1 Gaseosa PET ...</p>
+                        </div>
+                        <p class="p-3">
+                            <a id="compra3" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-4.webp" class="card-img-top" alt="Kentucky_Coronel" title="Hamburguesa Kentucky Coronel">
+                        <div class="card-body">
+                            <h5 class="card-title">16.900</h5>
+                            <h5 class="card-title">Kentucky Coronel Sandwich</h5>
+                            <p id="hambu4" class="card-text">1 Kentucky Coronel hamburguesa / Sandwich (1 Filete de pechuga de pollo apanado, Ensalada...)</p>
+                        </div>
+                        <p class="p-3">
+                            <a id="compra4" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-5.webp" class="card-img-top" alt="Kentucky_Sandwich" title="Combo Hamburguesa Kentucky Sandwich">
+                        <div class="card-body">
+                            <h5 class="card-title">21.900</h5>
+                            <h5 class="card-title">Combo Kentucky Sandwich</h5>
+                            <p id="hambu5" class="card-text">1 Kentucky hamburguesa /Sandwich (1 Filete de pechuga de pollo apanado, pepinillos,...)</p>
+                        </div>
+                        <p class="p-3">
+                            <a id="compra5" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-6.webp" class="card-img-top" alt="Combo_Kentucky_Coronel" title="Combo Hamburguesa Kentucky Coronel Sandwich">
+                        <div class="card-body">
+                            <h5 class="card-title">22.900</h5>
+                            <h5 class="card-title">Combo Kentucky Coronel Sandwich</h5>
+                            <p id="hambu6" class="card-text">1 Kentucky Coronel hamburguesa / Sandwich (1 Filete de pechuga de pollo apanado, Ensalada...).</p>
+                        </div>
+                        <p class="p-3">
+                            <a id="compra6" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-7.webp" class="card-img-top" alt="Sandwich_Crispy_BBQ" title="Hamburguesa Sandwich Crispy BBQ">
+                        <div class="card-body">
+                            <h5 class="card-title">23.900</h5>
+                            <h5 class="card-title">Sandwich Crispy BBQ</h5>
+                            <p id="hambu7" class="card-text">1 Sandwich Crispy BBQ (1 Filete de pechuga extra grande, triple empanizado, cebolla crisp...).</p>
+                        </div>
+                        <p class="p-3">
+                            <a id="compra7" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                    <div class="card smll-card">
+                        <img src="./media/hamburguesa-8.webp" class="card-img-top" alt="Combo_Sandwich_Crispy" title="Combo Hamburguesa Sandwich Crispy BBQ">
+                        <div class="card-body">
+                            <h5 class="card-title">29.900</h5>
+                            <h5 class="card-title">Combo Sandwich Crispy BBQ</h5>
+                            <p id="hambu8" class="card-text">1 Sandwich Crispy BBQ (1 Filete de pechuga extra grande, triple empanizado, cebolla crisp...)</p>
+                        </div>
+                        <p class="p-3">
+                            <a id="compra8" href="#" class="btn btn-danger">Comprar</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <script src="./script/scripts.js"></script>
+</body>
+</html>
