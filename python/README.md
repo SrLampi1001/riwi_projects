@@ -20,3 +20,5 @@ They are mostly made during the training first module and are the fundamentals, 
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/python/grades_management_workshop]
 - [Python assessment test 1 simulacrum](./assessment_test_1_simulacrum/README.md)
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/python/assessment_test_1_simulacrum]
+- [Python asssesment test 1](./assessment_test_1/README.md)
+    > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/python/assessment_test_1]
