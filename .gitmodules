@@ -1,0 +1,4 @@
+[submodule "webprojects/kepler_page"]
+	path = webprojects/kepler_page
+	url = https://github.com/SrLampi1001/kepler_page.git
+	branch = main

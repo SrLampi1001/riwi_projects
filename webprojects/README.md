@@ -21,3 +21,5 @@ Backend only projects aren't part of the webpages collection, only if they have 
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/assessment_test_3_simulacrum]
 - [Assessment test 3](./assessment_test_3/README.md)
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/assessment_test_3]
+- [Kepler Page](./kepler_page/README.md)
+    > Repository [https://github.com/SrLampi1001/kepler_page]
