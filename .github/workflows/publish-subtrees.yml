@@ -22,20 +22,20 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Push user story 1
-        run: git subtree push --prefix=python/user_story_1 origin project/python/user_story_1 || echo "No changes or error on user_story_1"
+      # - name: Push user story 1
+      #  run: git subtree push --prefix=python/user_story_1 origin project/python/user_story_1 && echo "No changes or error on user_story_1"
 
-      - name: Push user story 2
-        run: git subtree push --prefix=python/user_story_2 origin project/python/user_story_2 || echo "No changes or error on user_story_2"
+      # - name: Push user story 2
+      #  run: git subtree push --prefix=python/user_story_2 origin project/python/user_story_2 && echo "No changes or error on user_story_2"
 
-      - name: Push user story 3
-        run: git subtree push --prefix=python/user_story_3 origin project/python/user_story_3 || echo "No changes or error on user_story_3"
+      # - name: Push user story 3
+      #  run: git subtree push --prefix=python/user_story_3 origin project/python/user_story_3 && echo "No changes or error on user_story_3"
 
-      - name: Push python workshop 1
-        run: git subtree push --prefix=python/workshop_1 origin project/python/workshop_1 || echo "No changes or error on workshop_1"
+      # - name: Push python workshop 1
+      #  run: git subtree push --prefix=python/workshop_1 origin project/python/workshop_1 && echo "No changes or error on workshop_1"
 
-      - name: Push python worshop 2
-        run: git subtree push --prefix=python/workshop_2 origin project/python/workshop_2 || echo "No changes or error on workshop_2"
+      #- name: Push python worshop 2
+      #  run: git subtree push --prefix=python/workshop_2 origin project/python/workshop_2 && echo "No changes or error on workshop_2"
       
       - name: Push python mini projects
-        run: git subtree push --prefix=python/mini-projects origin project/python/mini-projects || echo "No changes or error on mini projects"
+        run: git subtree push --prefix=python/mini-projects origin project/python/mini-projects && echo "No changes or error on mini projects"
