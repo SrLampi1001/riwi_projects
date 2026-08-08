@@ -1,0 +1,75 @@
+{
+  "users": [
+    {
+      "id": "6d2d",
+      "name": "username4",
+      "email": "Email@gmail.com",
+      "password": "123456",
+      "role": "user"
+    },
+    {
+      "id": "3431",
+      "name": "admin",
+      "email": "admin@account.com",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": "b1eb",
+      "name": "zxasdfasfa",
+      "email": "asdfasdf|@asdf.com",
+      "password": "123456",
+      "role": "admin"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Clasic Beef Burger",
+      "price": "8.99",
+      "description": "Premium beef patty with cheddar cheese, lettuce, ...",
+      "category": "burger",
+      "image": "./../media/images/clasic_beef_burger.png"
+    },
+    {
+      "id": "2",
+      "name": "Double beacon Melt",
+      "price": "12.50",
+      "description": "Two patties, crispy, bacon melted swiss cheese, and..",
+      "category": "burger",
+      "image": "./../media/images/double_beacon_melt.png"
+    },
+    {
+      "id": "3",
+      "name": "Golden Fries",
+      "price": "3.99",
+      "description": "Freshly cut potatoes fried to perfection with sea salt",
+      "category": "side",
+      "image": "./../media/images/golden_fries.png"
+    },
+    {
+      "id": "4",
+      "name": "Cola Zero",
+      "price": "2.50",
+      "description": "chilled zero sugar cola with ice and a slice of lemon",
+      "category": "drink",
+      "image": "./../media/images/cola_zero.png"
+    },
+    {
+      "id": "5",
+      "name": "Donut Box",
+      "price": "6.00",
+      "description": "Assorted glazed and frosted donuts",
+      "category": "drink",
+      "image": "./../media/images/donut_box.png"
+    },
+    {
+      "id": "6",
+      "name": "Pepperoni pizza",
+      "price": "4.50",
+      "description": "Large NY style slice with double pepperoni",
+      "category": "drink",
+      "image": "./../media/images/pizza_slice.png"
+    }
+  ]
+}

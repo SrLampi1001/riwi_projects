@@ -1,0 +1,63 @@
+i.admin_icon{
+    content: url("./../media/icons/admin_icon.png");
+}
+i.burger_icon{
+    content: url("./../media/icons/burger_icon.png");
+}
+i.bills_icon{
+    content:url("./../media/icons/bills_icon.png");
+}
+i.canceled_icon{
+    content: url("./../media/icons/canceled_icon.png");
+}
+i.card_icon{
+    content:url("./../media/icons/card_icon.png");
+}
+i.cono_icon{
+    content: url("./../media/icons/cono_icon.png");
+}
+i.cubiertos_2_icon{
+    content: url("./../media/icons/cubiertos_2_icon.png");
+}
+i.cubiertos_icon{
+    content: url("./../media/icons/cubiertos_icon.png");
+}
+i.done_icon{
+    content: url("./../media/icons/done_icon.png")
+}
+i.drink_icon{
+    content: url("./../media/icons/drink_icon.png");
+}
+i.identification_icon{
+    content: url("./../media/icons/identification_icon.png");
+}
+i.mail_icon{
+    content: url("./../media/icons/mail_icon.png");
+}
+i.map_icon{
+    content: url("./../media/icons/map_icon.png");
+}
+i.pizza_icon{
+    content: url("./../media/icons/pizza_icon.png");
+}
+i.preparing_icon{
+    content: url("./../media/icons/preparing_icon.png");
+}
+i.settings_icon{
+    content: url("./../media/icons/settings_icon.png");
+}
+i.task_icon{
+    content: url("./../media/icons/task_icon.png");
+}
+i.truck_icon{
+    content: url("./../media/icons/truck_icon.png");
+}
+i.user_icon{
+    content: url("./../media/icons/user_icon.png");
+}
+i.cart_icon{
+    content: url("./../media/icons/cart_icon.png");
+}
+i.bag_icon{
+    content: url("./../media/icons/bag_icon.png");
+}
