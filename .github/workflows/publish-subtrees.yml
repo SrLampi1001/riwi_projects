@@ -37,51 +37,51 @@ jobs:
       #- name: Push python worshop 2
       #  run: git subtree push --prefix=python/workshop_2 origin project/python/workshop_2 && echo "No changes or error on workshop_2"
       
-      - name: Push python mini projects
-        run: git subtree push --prefix=python/mini-projects origin project/python/mini-projects && echo "No changes or error on python mini projects"
+      #- name: Push python mini projects
+      #  run: git subtree push --prefix=python/mini-projects origin project/python/mini-projects && echo "No changes or error on python mini projects"
       
-      - name: Push python grades management workshop
-        run: git subtree push --prefix=python/grades_management_workshop origin project/python/grades_management_workshop && echo "No changes or error on python grades management workshop"
+      #- name: Push python grades management workshop
+      #  run: git subtree push --prefix=python/grades_management_workshop origin project/python/grades_management_workshop && echo "No changes or error on python grades management workshop"
 
-      - name: Push python assessment test module 1 simulacrum
-        run: git subtree push --prefix=python/assessment_test_1_simulacrum origin project/python/assessment_test_1_simulacrum && echo "No changes or error on python assesment test 1 simulation"
+      #- name: Push python assessment test module 1 simulacrum
+      #  run: git subtree push --prefix=python/assessment_test_1_simulacrum origin project/python/assessment_test_1_simulacrum && echo "No changes or error on python assesment test 1 simulation"
 
-      - name: Push python assessment test module 1
-        run: git subtree push --prefix=python/assessment_test_1 origin project/python/assessment_test_1 && echo "No changes or errors on python assessment test 1"
+      #- name: Push python assessment test module 1
+      #  run: git subtree push --prefix=python/assessment_test_1 origin project/python/assessment_test_1 && echo "No changes or errors on python assessment test 1"
       
-      - name: Push HTML and CSS Form
-        run: git subtree push --prefix=webprojects/form_only_css_html origin project/web/form_only_css_html && echo "No changes or error on HTML and CSS form"
+      #- name: Push HTML and CSS Form
+      #  run: git subtree push --prefix=webprojects/form_only_css_html origin project/web/form_only_css_html && echo "No changes or error on HTML and CSS form"
       
-      - name: Push HTML and CSS assessment test
-        run: git subtree push --prefix=webprojects/assessment_test_2 origin project/web/assessment_test_2 && echo "No changes or error on Assessment test 2"
+      #- name: Push HTML and CSS assessment test
+      #  run: git subtree push --prefix=webprojects/assessment_test_2 origin project/web/assessment_test_2 && echo "No changes or error on Assessment test 2"
       
-      - name: Push User story 4 (Module 3, 1)
-        run: git subtree push --prefix=webprojects/user_story_4 origin project/web/user_story_4 && echo "No changes or error on User Story 4, Module 3-1"
+      #- name: Push User story 4 (Module 3, 1)
+      #  run: git subtree push --prefix=webprojects/user_story_4 origin project/web/user_story_4 && echo "No changes or error on User Story 4, Module 3-1"
       
-      - name: Push Simple Storage (JSON)
-        run: git subtree push --prefix=webprojects/simple_storage origin project/web/simple_storage && echo "No changes or error on Simple Storage (JSON) with JavaScript"
+      #- name: Push Simple Storage (JSON)
+      #  run: git subtree push --prefix=webprojects/simple_storage origin project/web/simple_storage && echo "No changes or error on Simple Storage (JSON) with JavaScript"
       
-      - name: Push User story 5
-        run: git subtree push --prefix=webprojects/user_story_5 origin project/web/user_story_5 && echo "No changes or error on User story 5 with JavaScript"
+      #- name: Push User story 5
+      #  run: git subtree push --prefix=webprojects/user_story_5 origin project/web/user_story_5 && echo "No changes or error on User story 5 with JavaScript"
 
-      - name: Push KFC frontend
-        run: git subtree push --prefix=webprojects/kfc origin project/web/kfc && echo "No changes or error on KFC simple Frontend with JavaScript"
+      #- name: Push KFC frontend
+      #  run: git subtree push --prefix=webprojects/kfc origin project/web/kfc && echo "No changes or error on KFC simple Frontend with JavaScript"
 
-      - name: Push assessment test 3 simulacrum
-        run: git subtree push --prefix=webprojects/assessment_test_3_simulacrum origin project/web/assessment_test_3_simulacrum && echo "No changes or error on Assessment test 3 simulacrum with JavaScript"
+      #- name: Push assessment test 3 simulacrum
+      #  run: git subtree push --prefix=webprojects/assessment_test_3_simulacrum origin project/web/assessment_test_3_simulacrum && echo "No changes or error on Assessment test 3 simulacrum with JavaScript"
       
-      - name: Push assessment test 3
-        run: git subtree push --prefix=webprojects/assessment_test_3 origin project/web/assessment_test_3 && echo "No changes or error on Assessment test 3 (module 3)"
+      #- name: Push assessment test 3
+      #  run: git subtree push --prefix=webprojects/assessment_test_3 origin project/web/assessment_test_3 && echo "No changes or error on Assessment test 3 (module 3)"
       
-      - name: Push User story 6
-        run: git subtree push --prefix=webprojects/user_story_6 origin project/web/user_story_6 && echo "No changes or error on User story 6 with JavaScript and JSON Server"
+      #- name: Push User story 6
+      #  run: git subtree push --prefix=webprojects/user_story_6 origin project/web/user_story_6 && echo "No changes or error on User story 6 with JavaScript and JSON Server"
 
-      - name: Push User story 7
-        run: git subtree push --prefix=webprojects/user_story_7 origin project/web/user_story_7 && echo "No changes or error on User story 7 with Express and MySQL"
+      #- name: Push User story 7
+      #  run: git subtree push --prefix=webprojects/user_story_7 origin project/web/user_story_7 && echo "No changes or error on User story 7 with Express and MySQL"
 
-      - name: Push Express mysql practice
+      - name: Push Express MySQL Practice
         run: |
-          git subtree split --prefix=webprojects/express_mysql_practice -b split_express_mysql
+          git subtree split --prefix=webprojects/express_mysql_practice --ignore-joins -b split_express_mysql
           git push origin split_express_mysql:project/web/express_mysql_practice --force
           git branch -D split_express_mysql
 
