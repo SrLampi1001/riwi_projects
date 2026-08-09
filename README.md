@@ -2,6 +2,7 @@
 title: "VoiceAgent — Multimodal Conversational Web Application"
 description: "A bilingual Spanish-English voice assistant that can understand, translate, and define words dynamically with real-time tool orchestration and visual indicators."
 author: "Santiago Sánchez Ruiz"
+status: incomplete
 ---
 
 # 🎙️ VoiceAgent: Multimodal Conversational Web Application
