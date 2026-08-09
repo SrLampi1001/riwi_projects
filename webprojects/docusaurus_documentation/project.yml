@@ -1,0 +1,41 @@
+project:
+  id: web-docusaurus-documentation
+  name: Docusaurus documentation
+  description: Docusaurus site that complements the portfolio with the technical side of the Riwi projects (what each project is, how it is built, how to run it, illustrative notes).
+
+  type: documentation
+  categories:
+    - education
+    - web
+    - documentation
+    - module-3
+  tags:
+    - docusaurus
+    - docs
+    - static-site
+
+  status: completed
+
+  tech_stack:
+    frameworks:
+      - docusaurus
+    tools:
+      - node
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/docusaurus_documentation
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/docusaurus_documentation
+
+  deployment:
+    docusaurus:
+      type: static-site
+      url: https://srlampidocs.web.app/
+      active: true

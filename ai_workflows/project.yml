@@ -1,0 +1,55 @@
+project:
+  id: ai-workflows
+  name: AI workflows
+  description: AI-assisted applications and automation workflows created for the Riwi AI assessment tests, integrating n8n, LLMs, RAG, and conversational agents.
+
+  type: collection
+  categories:
+    - education
+    - ai
+    - automation
+  tags:
+    - n8n
+    - llm
+    - rag
+    - voice
+    - automation
+    - module-4
+
+  tech_stack:
+    languages:
+      - python
+      - javascript
+      - typescript
+    frameworks:
+      - react
+      - express
+      - fastapi
+    databases:
+      - postgresql
+      - mongodb
+      - redis
+    ai:
+      - gemini
+      - nvidia-nim
+      - deepseek
+    tools:
+      - docker
+      - n8n
+      - telegram-bot
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/ai_workflows
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: ai_workflows
+
+  presentation:
+    featured: true
+    order: 3

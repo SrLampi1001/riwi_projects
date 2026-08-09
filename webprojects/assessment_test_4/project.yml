@@ -1,0 +1,48 @@
+project:
+  id: web-assessment-test-4
+  name: Assessment test 4
+  description: Express backend that ingests a CSV file via Multer, normalizes it into a MySQL schema, and logs activity in MongoDB. The project is flagged as UNCOMPLETED in its README and is not finished.
+
+  type: api
+  categories:
+    - education
+    - web
+    - assessment-test
+    - module-3
+  tags:
+    - nodejs
+    - express
+    - mysql
+    - mongodb
+    - csv
+    - multer
+
+  status: incomplete
+
+  tech_stack:
+    languages:
+      - javascript
+      - sql
+    frameworks:
+      - express
+    databases:
+      - mysql
+      - mongodb
+    tools:
+      - csv-parse
+      - multer
+      - dotenv
+      - mysql2
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/assessment_test_4
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/assessment_test_4/docs
+      - path: webprojects/assessment_test_4/uploads

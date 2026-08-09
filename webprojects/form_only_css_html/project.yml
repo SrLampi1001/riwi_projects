@@ -1,0 +1,36 @@
+project:
+  id: web-form-only-css-html
+  name: HTML and CSS form
+  description: Static form built only with HTML and CSS, no JavaScript and no libraries, demonstrating basic semantic structure and external stylesheets.
+
+  type: static-site
+  categories:
+    - education
+    - web
+    - form
+    - module-2
+  tags:
+    - html
+    - css
+    - semantics
+    - no-js
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - html
+      - css
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/form_only_css_html
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/form_only_css_html

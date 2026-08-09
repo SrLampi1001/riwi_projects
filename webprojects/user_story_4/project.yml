@@ -1,0 +1,35 @@
+project:
+  id: web-user-story-4
+  name: User Story 4
+  description: Module 3 user story 1 — interactive JavaScript that greets users by name, validates their age, and reports whether they are a minor or an adult using prompts, alerts, and try-catch error handling.
+
+  type: script
+  categories:
+    - education
+    - web
+    - user-story
+    - module-3
+  tags:
+    - javascript
+    - dom
+    - prompts
+    - validation
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - javascript
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/user_story_4
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/user_story_4

@@ -1,0 +1,37 @@
+project:
+  id: python-user-story-2
+  name: User Story 2
+  description: Second user story from Module 1 — manages an in-memory product inventory through an interactive menu with statistics and input validation.
+
+  type: script
+  categories:
+    - education
+    - python
+    - user-story
+    - module-1
+  tags:
+    - fundamentals
+    - lists
+    - dictionaries
+    - loops
+    - conditionals
+    - console
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/user_story_2
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/user_story_2

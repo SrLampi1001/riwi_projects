@@ -1,0 +1,46 @@
+project:
+  id: ai-assessment-test-1
+  name: AI assessment test 1
+  description: Dockerized n8n assistant for a foreign-languages academy — Telegram, email, and webhook channels, RAG context for schedules/prices/levels, embedding-similarity response caching, Redis, and PostgreSQL.
+
+  type: automation
+  categories:
+    - education
+    - ai
+    - assessment-test
+    - module-4
+  tags:
+    - n8n
+    - rag
+    - redis
+    - postgresql
+    - telegram
+    - email
+    - webhook
+    - gemini
+
+  status: completed
+
+  tech_stack:
+    frameworks:
+      - n8n
+    databases:
+      - postgresql
+      - redis
+    ai:
+      - gemini
+    tools:
+      - docker
+      - telegram-bot
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/ai_workflows/ai_assessment_test_1
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: ai_workflows/ai_assessment_test_1
