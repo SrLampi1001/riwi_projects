@@ -1,0 +1,63 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "password": "hashed_password"
+    },
+    {
+      "id": "43e7",
+      "name": "annonymus",
+      "email": "user@mail.com",
+      "password": "123456a",
+      "posts": [
+        "2cd0"
+      ]
+    },
+    {
+      "id": "e8ce",
+      "name": "annonymus",
+      "email": "corre@mail.com",
+      "password": "123456a"
+    },
+    {
+      "id": "54aa",
+      "name": "annonymus",
+      "email": "mail@corr.com",
+      "password": "123456a"
+    },
+    {
+      "id": "6a05",
+      "name": "user",
+      "email": "user2@mail.com",
+      "password": "123456a"
+    }
+  ],
+  "posts": [
+    {
+      "id": "eee",
+      "title": "Día eterno",
+      "contents": "Las ciudades del hemisferio iluminado han comenzado a migrar hacia el cinturón crepuscular. ¿Estamos presenciando el inicio de una nueva era?",
+      "userName":"Archivista Solar"
+    },
+    {
+      "id": "eee",
+      "title": "Noche eterna",
+      "contents": "Se han detectado señales térmicas bajo el hielo profundo. Algo se mueve en la oscuridad… y no es natural.",
+      "userName":"Vigía Nocturno"
+    },
+    {
+      "id": "eee",
+      "title": "Crepúsculo",
+      "contents": "El equilibrio del cinturón es frágil. La luz avanza, la noche resiste. ¿Qué pasará si uno domina al otro?",
+      "userName":"Caminante del Umbral"
+    },
+    {
+      "id": "2cd0",
+      "title": "Día eterno",
+      "contents": "Post",
+      "userName":"annonymus"
+    }
+  ]
+}
