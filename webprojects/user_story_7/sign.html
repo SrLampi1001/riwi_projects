@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kepler-22b | Acceso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="./css/sign.css">
+</head>
+
+<body>
+    <div class="auth-card">
+        <h2 class="auth-title">Kepler-22b</h2>
+
+        <!-- Tabs -->
+        <ul class="nav nav-pills nav-justified mb-4">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#login">
+                    Login
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#signup">
+                    Sign Up
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <!-- LOGIN -->
+            <div class="tab-pane fade show active" id="login">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" placeholder="usuario@kepler22b.io" data-login-email required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" placeholder="••••••••" data-login-password required>
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-2" >Entrar</button>
+                </form>
+            </div>
+            <!-- SIGN UP -->
+            <div class="tab-pane fade" id="signup">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de usuario</label>
+                        <input type="text" class="form-control" placeholder="Explorador22b" data-signup-username>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" placeholder="usuario@kepler22b.io" data-signup-email required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" placeholder="••••••••" data-signup-password required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">confirmar contraseña</label>
+                        <input type="password" class="form-control" placeholder="••••••••" data-signup-confirm-password required>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-2">Crear cuenta</button>
+                </form>
+            </div>
+        </div>
+        <div class="auth-footer">
+            Un mundo entre la luz y la sombra
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/script/sign.js" type="module"></script>
+</body>
+
+</html>

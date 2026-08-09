@@ -1,0 +1,26 @@
+/* Css variables for use inside styles.css */
+:root{
+    /* Colors */
+    --neutral-silver: #F5F7FA;
+    --neutral-black: #263238;
+    --green: #4CAF4F;
+    --light-grey:#89939E;
+    --grey: #717171;
+    --font-grey: #4D4D4D;
+    /* Properties */
+    --shadow:#ABBED133;
+    --font-inter: "Inter", sans-serif;
+    /* Multimedia logos and icons */
+    --instagram-logo: url("../media/icons/instagram.svg");
+    --twitter-logo: url("../media/icons/twitter.svg");
+    --youtube-logo:url("../media/icons/youtube.svg");
+    --send-icon: url("../media/icons/send.svg");
+    --baloon-icon: url("../media/icons/baloon.svg");
+    --right-arrow-icon: url("../media/icons/Right-arrow.svg");
+    --right-arrow-icon-w:url("../media/icons/Right-arrow-white.svg");
+    --full-dot: url("../media/icons/full-dot-green.svg");
+    --empty-dot: url("../media/icons/empty-dot-green.svg");
+    --card-icon: url("../media/icons/Icon-card.png");
+    --logo:url("../media/Logo.svg");
+    --logo-2:url("../media/Logo-2.svg");
+}

@@ -1,11 +1,17 @@
 # Riwi Projects
 This repository contains all small and medium size projects made in Riwi outside organizations.
-Organizations works are implemented as `git subtrees` inside this repository, this keeps the commit history separated while also allowing to show my contributions to those repositories
+`git subtrees` are the main project distribution and organization on the projects, this keeps the commit history separated while also allowing to show my contributions to those repositories
+Organizations works and big projects (worth their own separate repository) are implemented as `git submodules` with external links, the small projects are implemented as `sub trees` too but their links point to this same repo dedicated branch. 
 
-Bigger repositories will be all connected via `git subtrees`, if you want to explore this files more comfortably, you can see the [webpage](https://SrLampi1001@github.io/riwi_projects) to look the file more freely. 
+If you want to explore this files more comfortably, you can see the [webpage](https://SrLampi1001@github.io/riwi_projects) to look the file more freely.  <!-- Soon -->
 
-> [!NOTE]
-> *Note to self:* Should think about creating a free Vercel backend for services like script files overview and terminal view (This would require a heavy amount of security)
+## Project folders
+
+| Folder | Projects included |
+| --- | --- |
+| [Python projects](./python/README.md) | Python fundamentals, user stories, workshops, mini-projects, and the first assessment test. |
+| [Web projects](./webprojects/README.md) | Frontend and backend exercises, web user stories, assessment tests, documentation, and portfolio projects. |
+| [AI workflows](./ai_workflows/README.md) | AI-assisted applications and automation workflows created for AI assessment tests. |
 
 ## General tech
 These projects are mainly composed of basic Python and Static websites with JavaScript + HTML + CSS
@@ -16,7 +22,7 @@ There are also some works that use frameworks like docusaurus (a documentation f
 - Riwi prioritized the use of Scrum methodology for the project. So projects are mainly created around Scrum ceremonies and workflow. 
 
 ## Should know
-Each project is inside its own separated folder, and have a `project.yml` file that defines metadata required for indexing and classification. 
+Each project is inside its own separated folder, and have a `project.yml` file that defines metadata required for indexing and classification. <!-- Not yet, soon `project.yml` contract will be created and files will be updated to have metadata-->
 
 If you want to clone this repository, I would recommend:
 
@@ -27,7 +33,7 @@ If you want to clone this repository, I would recommend:
 Instead of cloning every project in main, clone the specific branch dedicated to the project, that way you won't end with more projects than you care about. 
 
 ### Tags
-There are tags in each project that will tell you if projec state.
+There are tags in each project that will tell you the project state. <!--They should be inside the `project.yml` file, but be reflected on the README for user friendly reasons-->
 
 | Tag | Meaning |
 | --- | ------- |

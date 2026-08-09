@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./../styles/styles.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar px-3">
+        <a class="d-inline-flex align-items-center fw-bold navbar-brand text-black" href="#"><i class="cono_icon"></i>RestorApp Admin</a>
+        <div class="dropdown">
+            <div class="d-inline-flex align-items-center gap-4 navbar-brand text-black" href="#">
+                <a href="#" class="nav-link fw-bold border-bottom border-success fs-6">Dashboard</a>
+                <a href="#" class="nav-link fs-6">Menu</a>
+                <a href="#" class="nav-link fs-6">Users</a>
+            </div>
+            <a class="text-black dropdown-toggle" href="#" data-bs-toggle="dropdown"> <i class="admin_icon"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end text-black">
+                <li><a class="dropdown-item" href="#" id="logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main content -->
+            <main class="col-md-12 ms-sm-auto px-4 py-4 row">
+                <h2 class="mb-4">Dashboard</h2>
+                <!-- Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5> <i class="bag_icon"></i> Total orders</h5>
+                                <h3 class="ps-3" id="amount-orders">1,245</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5><i class="task_icon"></i>Pending orders</h5>
+                                <h3 class="ps-3" id="amount-orders-pendinf">$8,430</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5><i class="bills_icon"></i>Today's revenue</h5>
+                                <h3 class="ps-3" id="revenue">320</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Table -->
+                <div class="row col-md-9">
+                    <div class="d-flex justify-content-between p-2">
+                        <h2 class="fw-bolder fs-4">Recent Orders</h2>
+                        <div class="d-flex gap-3 align-items-start">
+                            <button type="button" class="btn btn-light" id="filter">Filter</button>
+                            <button type="button" class="btn btn-light" id="export">Export</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <table class="table table-striped table-light mb-0" id="table-cars">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>User</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- <tr>
+                                        <td><button type="button" class="badge bg-success" id="create-car-btn">Crear</button></td>
+                                        <td><input type="text" class="form-control overflow-input" placeholder="Name..." id="inputNameCar"></td>
+                                    <td><input type="text" class="form-control overflow-input" placeholder="Type..." id="inputTypeCar"></td>
+                                    <td><input type="text" class="form-control overflow-input" placeholder="URL..." id="inputImageCar"></td>
+                                    <td><input type="text" class="form-control overflow-input" placeholder="Total Price..." id="inputPriceCar"></td>
+                                    <td><input type="text" class="form-control overflow-input" placeholder="Discount..." id="inputDiscountCar"></td>
+                                    <td><input type="text" class="form-control overflow-input" placeholder="liters Capacity..." id="inputLiterCapacityCar"></td>
+                                    <td><input type="checkbox" class="form-check-input mt-0" id="inputIsManual"></td>
+                                    <td><input type="text" class="form-control overflow-input" placeholder="People Capacity..." id="inputPeopleCapacityCar"></td>
+                                </tr> -->
+                                <tr class="table-active">
+                                    <td class="small text-secondary">#1024</td>
+                                    <td>Alice Smith</td>
+                                    <td class="text-secondary date">Oct 27, 14:30</td>
+                                    <td><span class="small bg-info-subtle text-info-emphasis rounded-pill p-2">Preparing</span></td>
+                                    <td>$45.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pagination d-flex justify-content-center align-items-center gap-3 mt-5">
+                    <button type="button" class="btn rounded-circle" id="previous-page">&lt;</button>
+                    <div class="pagination-numbers d-flex justify-content-center gap-3">
+                        <span class="btn rounded-circle bg-success-subtle">1</span>
+                    </div>
+                    <button type="button" class="btn rounded-circle" id="next-page">&gt;</button>
+                </div>
+            </div>
+            <aside class="card col-md-3 p-0 m-2">
+                <div class="card-header position-relative">
+                    <p class="small text-secondary m-0">order details</p>
+                    <span id="id-order" class="fw-bold">#1024</span>
+                    <span class="small bg-info-subtle text-info-emphasis rounded-pill p-2 position-absolute top-0 end-0">Preparing</span>
+                </div>
+                <div class="card-body">
+                    <div class="row pb-3 border-bottom border-black">
+                        <div class="col-2 rounded-circle d-inline-flex justify-content-center align-content-center align-items-center">
+                            <i class="user_icon"></i>
+                        </div>
+                        <div class="d-flex flex-column col-10">
+                            <span class="small text-secondary">Customer</span>
+                            <span class="fw-bold small" id="name_user_order">Alice smith</span>
+                            <span class="small text-secondary" id="email_user_order">alice.smith@example.com</span>
+                            <span class="small text-secondary" id="number_user_order">+1 (555) 123-4567</span>
+                        </div>
+                    </div>
+                    <p class="small text-secondary mt-3 mb-1">Items</p>
+                    <div class="ps-3 border-bottom border-black">
+                        <!-- Example item inside aside for order -->
+                        <div class="row mb-1">
+                            <div class="col-2 rounded-2 d-inline-flex justify-content-center align-content-center align-items-center bg-secondary-subtle text-secondary-emphasis">
+                                2x
+                            </div>
+                            <div class="col-10 row">
+                                <p class="m-0 small fw-bold col-8 name">Burger clasico</p>
+                                <p class="m-0 col-4">$24.00</p>
+                                <p class="m-0 small text-secondary col-8">Extra chesse, No onions</p>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-2 rounded-2 d-inline-flex justify-content-center align-content-center align-items-center bg-secondary-subtle text-secondary-emphasis">
+                                2x
+                            </div>
+                            <div class="col-10 row">
+                                <p class="m-0 small fw-bold col-8 name">Burger clasico</p>
+                                <p class="m-0 col-4">$24.00</p>
+                                <p class="m-0 small text-secondary col-8">Extra chesse, No onions</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-bottom border-dark-subtle pb-2">
+                        <div class="d-flex justify-content-between mt-2">
+                            <span class="text-secondary small">Subtotal</span>
+                            <span class="text-secondary small" id="subtotal_order">$45.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span class="text-secondary small">tax (8%)</span>
+                            <span class="text-secondary small" id="tax_order">$3.60</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span class="fw-bold">Total</span>
+                        <span class="fw-bold" id="total_order">$48.60</span>
+                    </div>
+                </div>
+                <div class="card-footer row m-0 p-2">
+                    <label for="status_order" class="small text-secondary mt-3 mb-1 fw-bold">Update status</label>
+                    <div class="col-md-8">
+                        <select name="status_order" id="status_order" class="form-select">
+                            <option value="preparing">Preparing</option>
+                            <option value="preparing">Pending</option>
+                            <option value="preparing">Delivering</option>
+                            <option value="preparing">Ready</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-success col-md-4">Update</button>
+                </div>
+            </aside>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./../js/logout.script.js"></script>
+    <script src="./../js/script.js"> </script>
+</body>
+
+</html>

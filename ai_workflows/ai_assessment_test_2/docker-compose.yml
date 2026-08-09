@@ -1,0 +1,60 @@
+services:
+  mongodb:
+    image: mongo:6
+    container_name: voiceagent_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - voiceagent_net
+
+  postgres:
+    image: ankane/pgvector
+    container_name: voiceagent_postgres
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: voiceagent
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - voiceagent_net
+
+  backend:
+    build: ./backend
+    container_name: voiceagent_backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+      - postgres
+    networks:
+      - voiceagent_net
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./frontend
+    container_name: voiceagent_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - voiceagent_net
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  mongodb_data:
+  postgres_data:
+
+networks:
+  voiceagent_net:
+    driver: bridge

@@ -1,0 +1,13 @@
+.hidden{
+    display: none;
+}
+.profile-img{
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 1px #000;
+}

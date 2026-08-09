@@ -1,0 +1,480 @@
+{
+  "name": "PetCare Medellín - AI Triage System",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "={{ $env.VET_TELEGRAM_CHAT_ID }}"
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-telegram.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300],
+      "webhookId": "petcare-telegram-webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "google-forms",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "google-forms-webhook",
+      "name": "Google Forms Webhook",
+      "type": "n8n-nodes-webhook.webhook",
+      "typeVersion": 2,
+      "position": [100, 500],
+      "webhookId": "petcare-google-forms-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize Input from both channels\nconst telegramData = $input.first().json;\n\nlet normalized = {\n  source: 'unknown',\n  user_id: '',\n  user_name: '',\n  message: '',\n  timestamp: new Date().toISOString(),\n  metadata: {}\n};\n\n// Detect source and normalize\nif (telegramData.message) {\n  // Telegram message\n  normalized.source = 'telegram';\n  normalized.user_id = String(telegramData.message.chat.id);\n  normalized.user_name = telegramData.message.chat.first_name || 'Unknown';\n  normalized.message = telegramData.message.text;\n  normalized.metadata = {\n    message_id: telegramData.message.message_id\n  };\n} else if (telegramData.body) {\n  // Google Forms webhook\n  normalized.source = 'google_forms';\n  normalized.user_id = telegramData.body.email || telegramData.body.sender_email || 'anonymous';\n  normalized.user_name = telegramData.body.name || 'Form User';\n  normalized.message = telegramData.body.message || telegramData.body.preferred_date;\n  normalized.metadata = {\n    form_response: telegramData.body\n  };\n}\n\nreturn [{ json: normalized }];"
+      },
+      "id": "normalize-input",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 400]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Eres un agente clasificador para la clínica veterinaria PetCare Medellín.\n\nTu tarea es analizar el mensaje del usuario y clasificarlo en UNA de las siguientes categorías:\n\n1. **URGENCIA** - Casos que requieren atención veterinaria inmediata:\n   - Síntomas graves: dificultad respiratoria, envenenamiento, hemorragias\n   - Trauma: golpes, caídas, accidentes\n   - Comportamiento extraño inusual\n\n2. **AGENDAMIENTO** - Solicitudes de citas:\n   - \"necesito una cita\"\n   - \"quiero agendar\"\n   - Fecha específica requerida\n\n3. **CONSULTA** - Preguntas sobre servicios, precios, protocolos:\n   - \"¿Cuánto cuesta...?\"\n   - \"¿Cuál es el horario...?\"\n   - \"¿Qué servicios ofrecen?\"\n\n4. **SEGUIMIENTO** - Actualizaciones sobre pacientes existentes:\n   - \"Mi mascota ya está mejor\"\n   - \"Resultados de exámenes\"\n   - \"Control post-tratamiento\"\n\n5. **ADMINISTRATIVA** - Solicitudes administrativas:\n   - Facturación\n   - Horarios de atención\n   - Ubicación\n   - Contacto\n\nResponde ÚNICAMENTE con JSON válido, sin explicaciones adicionales:\n\n{\n  \"categoria\": \"CATEGORÍA\",\n  \"prioridad\": 1-5,\n  \"justificacion\": \"breve explicación de por qué se clasificó así\"\n}"
+            },
+            {
+              "role": "user",
+              "content": "Usuario: {{ $json.user_name }}\nMensaje: {{ $json.message }}\nFuente: {{ $json.source }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.1,
+          "maxTokens": 500
+        }
+      },
+      "id": "ai-classifier",
+      "name": "AI Classifier Agent",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [700, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse LLM Classification Output\nconst input = $input.first().json;\n\nlet classificationText = input.message || input.content || JSON.stringify(input);\n\n// Parse if string\nif (typeof classificationText === 'string') {\n  try {\n    classificationText = JSON.parse(classificationText);\n  } catch (e) {\n    // Try to extract JSON from response\n    const jsonMatch = classificationText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      classificationText = JSON.parse(jsonMatch[0]);\n    } else {\n      classificationText = { categoria: 'ADMINISTRATIVA', prioridad: 3, justificacion: 'Fallback por error de parsing' };\n    }\n  }\n}\n\nreturn [{\n  json: {\n    category: classificationText.categoria || classificationText.category || 'ADMINISTRATIVA',\n    priority: classificationText.prioridad || classificationText.priority || 3,\n    justification: classificationText.justificacion || classificationText.justification || '',\n    originalMessage: $('Normalize Input').first().json.message,\n    user_id: $('Normalize Input').first().json.user_id,\n    user_name: $('Normalize Input').first().json.user_name,\n    source: $('Normalize Input').first().json.source,\n    timestamp: $('Normalize Input').first().json.timestamp\n  }\n}];"
+      },
+      "id": "parse-classification",
+      "name": "Parse Classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.category }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "URGENCIA",
+              "operation": "equals"
+            },
+            {
+              "value2": "AGENDAMIENTO",
+              "operation": "equals"
+            },
+            {
+              "value2": "CONSULTA",
+              "operation": "equals"
+            },
+            {
+              "value2": "SEGUIMIENTO",
+              "operation": "equals"
+            },
+            {
+              "value2": "ADMINISTRATIVA",
+              "operation": "equals"
+            }
+          ]
+        },
+        "fallbackOutput": "default"
+      },
+      "id": "category-router",
+      "name": "Route by Category",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [1100, 400],
+      "outputs": ["URGENCIA", "AGENDAMIENTO", "CONSULTA", "SEGUIMIENTO", "ADMINISTRATIVA", "default"]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.VET_TELEGRAM_CHAT_ID }}",
+        "text": "=🚨 URGENCIA VETERINARIA 🚨\n\nCliente: {{ $('Parse Classification').first().json.user_name }}\nID: {{ $('Parse Classification').first().json.user_id }}\n\nMensaje:\n{{ $('Parse Classification').first().json.originalMessage }}\n\nClasificación:\n- Prioridad: {{ $('Parse Classification').first().json.priority }}/5\n- Justificación: {{ $('Parse Classification').first().json.justification }}\n\n⏰ Hora: {{ $('Parse Classification').first().json.timestamp }}\n🔗 Fuente: {{ $('Parse Classification').first().json.source }}"
+      },
+      "id": "urgencia-notify",
+      "name": "Notify Vet (URGENCIA)",
+      "type": "n8n-nodes-telegram.telegram",
+      "typeVersion": 1.2,
+      "position": [1300, 150]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "={{ $env.GOOGLE_SHEET_ID }}",
+        "range": "A:E",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now.toISO() }}",
+            "user_id": "={{ $('Parse Classification').first().json.user_id }}",
+            "user_name": "={{ $('Parse Classification').first().json.user_name }}",
+            "message": "={{ $('Parse Classification').first().json.originalMessage }}",
+            "status": "PENDIENTE",
+            "category": "AGENDAMIENTO"
+          }
+        }
+      },
+      "id": "agendamiento-sheet",
+      "name": "Create Appointment (Sheets)",
+      "type": "n8n-nodes-google-sheets. Sheet",
+      "typeVersion": 4.2,
+      "position": [1300, 300]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Eres un asistente virtual de la clínica veterinaria PetCare Medellín. Responde preguntas basadas ÚNICAMENTE en los documentos de negocio disponibles. Si no tienes información suficiente, indica que el cliente se comunique directamente con la clínica.\n\nInformación de la clínica:\n- Ubicación: Calle 10 #45-67, El Poblado, Medellín\n- Teléfono: +57 300 123 4567\n- Horario: Lunes a Sábado 7:00 AM - 8:00 PM\n- Emergencias: 24 horas"
+            },
+            {
+              "role": "user",
+              "content": "Pregunta del cliente: {{ $('Parse Classification').first().json.originalMessage }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 800
+        }
+      },
+      "id": "rag-query",
+      "name": "RAG Query (CONSULTA)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [1300, 450]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log Seguimiento\nreturn [{\n  json: {\n    status: 'logged',\n    category: 'SEGUIMIENTO',\n    user_id: $('Parse Classification').first().json.user_id,\n    message: $('Parse Classification').first().json.originalMessage,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "seguimiento-log",
+      "name": "Log Seguimiento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 600]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse Classification').first().json.user_id }}",
+        "text": "=Hola {{ $('Parse Classification').first().json.user_name }},\n\nGracias por contactar a PetCare Medellín 🐾\n\n📍 **Ubicación:** Calle 10 #45-67, El Poblado\n📞 **Teléfono:** +57 300 123 4567\n⏰ **Horario:** Lunes a Sábado 7:00 AM - 8:00 PM\n\n¿Hay algo más en lo que pueda ayudarte?"
+      },
+      "id": "admin-response",
+      "name": "Administrative Response",
+      "type": "n8n-nodes-telegram.telegram",
+      "typeVersion": 1.2,
+      "position": [1300, 750]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse Classification').first().json.user_id }}",
+        "text": "=Su solicitud ha sido recibida y está siendo procesada.\n\n📝 **Categoría:** {{ $('Parse Classification').first().json.category }}\n🔔 Le informaremos cuando haya una actualización.\n\nGracias por confiar en PetCare Medellín 🐾"
+      },
+      "id": "default-response",
+      "name": "Default Response",
+      "type": "n8n-nodes-telegram.telegram",
+      "typeVersion": 1.2,
+      "position": [1300, 900]
+    },
+    {
+      "parameters": {
+        "jsCode": "// User Response - Send AI response back to user\nconst ragResponse = $input.first().json;\nconst userData = $('Parse Classification').first().json;\n\nreturn [{\n  json: {\n    chatId: userData.user_id,\n    text: ragResponse.message || ragResponse.content || 'Gracias por su consulta. Un asesor se comunicará pronto.'\n  }\n}];"
+      },
+      "id": "consulta-response",
+      "name": "CONSULTA Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1500, 450]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.text }}"
+      },
+      "id": "send-telegram-consulta",
+      "name": "Send Telegram (CONSULTA)",
+      "type": "n8n-nodes-telegram.telegram",
+      "typeVersion": 1.2,
+      "position": [1700, 450]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse Classification').first().json.user_id }}",
+        "text": "=✅ Su cita ha sido registrada exitosamente.\n\n📅 **Detalles:**\n- Categoría: AGENDAMIENTO\n- Mensaje: {{ $('Parse Classification').first().json.originalMessage }}\n\n📞 Nos pondremos en contacto para confirmar la fecha y hora.\n\nGracias por confiar en PetCare Medellín 🐾"
+      },
+      "id": "agendamiento-confirm",
+      "name": "Confirm Appointment",
+      "type": "n8n-nodes-telegram.telegram",
+      "typeVersion": 1.2,
+      "position": [1500, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse Classification').first().json.user_id }}",
+        "text": "=✅ Receipt confirmed. Your update has been logged.\n\n📝 We will follow up if needed.\n\nThank you for trusting PetCare Medellín 🐾"
+      },
+      "id": "seguimiento-confirm",
+      "name": "Confirm Seguimiento",
+      "type": "n8n-nodes-telegram.telegram",
+      "typeVersion": 1.2,
+      "position": [1500, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Metrics Logger\nconst data = $('Parse Classification').first().json;\n\nconst metrics = {\n  timestamp: new Date().toISOString(),\n  channel: data.source,\n  category: data.category,\n  priority: data.priority,\n  response_time_ms: Date.now() - new Date(data.timestamp).getTime(),\n  user_id: data.user_id\n};\n\n// Log to console (in production, send to metrics DB)\nconsole.log('METRICS:', JSON.stringify(metrics));\n\nreturn [{ json: metrics }];"
+      },
+      "id": "metrics-logger",
+      "name": "Log Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1900, 400]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Forms Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "AI Classifier Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Classifier Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Classification": {
+      "main": [
+        [
+          {
+            "node": "Route by Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Category": {
+      "main": [
+        [
+          {
+            "node": "Notify Vet (URGENCIA)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Appointment (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RAG Query (CONSULTA)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Seguimiento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Administrative Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Default Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Vet (URGENCIA)": {
+      "main": [
+        [
+          {
+            "node": "Log Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Appointment (Sheets)": {
+      "main": [
+        [
+          {
+            "node": "Confirm Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Appointment": {
+      "main": [
+        [
+          {
+            "node": "Log Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Query (CONSULTA)": {
+      "main": [
+        [
+          {
+            "node": "CONSULTA Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CONSULTA Response": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram (CONSULTA)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram (CONSULTA)": {
+      "main": [
+        [
+          {
+            "node": "Log Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Seguimiento": {
+      "main": [
+        [
+          {
+            "node": "Confirm Seguimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Seguimiento": {
+      "main": [
+        [
+          {
+            "node": "Log Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Administrative Response": {
+      "main": [
+        [
+          {
+            "node": "Log Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Response": {
+      "main": [
+        [
+          {
+            "node": "Log Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "America/Bogota"
+  },
+  "staticData": null,
+  "tags": ["petcare", "veterinary", "ai", "triage", "telegram"]
+}

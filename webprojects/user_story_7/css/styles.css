@@ -1,0 +1,50 @@
+body {
+  background: linear-gradient(180deg, #0b1020, #121a3a);
+  color: #e8ecff;
+}
+
+.navbar {
+  background-color: rgba(10, 15, 40, 0.9);
+  backdrop-filter: blur(8px);
+}
+
+.hero {
+  background: linear-gradient(
+    90deg,
+    #ffd86f 0%,
+    #9ee7ff 45%,
+    #1a1f4b 75%,
+    #0b1020 100%
+  );
+  color: #0b1020;
+}
+
+.hero-overlay {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 1rem;
+}
+
+.forum-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.forum-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.badge-day {
+  background-color: #ffd86f;
+  color: #0b1020;
+}
+
+.badge-night {
+  background-color: #6f7dff;
+}
+
+footer {
+  background-color: #080c1c;
+  color: #9aa4ff;
+}
