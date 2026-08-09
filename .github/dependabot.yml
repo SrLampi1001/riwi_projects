@@ -1,0 +1,41 @@
+# Dependabot configuration
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+
+updates:
+  # Keep third-party GitHub Actions up to date.
+  # Triggers lint-workflows.yml on PR via the .github/workflows/** path filter.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # Keep dev tooling (markdownlint-cli2, remark-cli, remark-gfm,
+  # remark-validate-links) up to date. Triggers docs-check.yml on PR via the
+  # package.json/package-lock.json path filter.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    groups:
+      dev-deps:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
