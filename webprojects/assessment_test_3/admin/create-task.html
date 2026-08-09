@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./../styles/styles.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/styles.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main content -->
+            <main class="col-md-10 p-0 row bg-secondary-subtle vh-100 w-100">
+                <nav class="navbar px-3 bg-white">
+                    <a class="d-inline-flex align-items-center fw-bold navbar-brand text-black" href="#"><i
+                            class="cono_icon"></i>>Dashboard</a>
+                    <div class="dropdown">
+                        <div class="d-inline-flex align-items-center gap-4 navbar-brand text-black" href="#">
+                            <div class="img-container profile-img">
+                                <img src="./assets/profile-img.jpg" alt="profile image" class="w-100">
+                            </div>
+                            <a href="#" class="nav-link fs-6 fw-bold">Alex Morgan</a>
+                            <a class="nav-link fs-6 text-danger" href="#" id="logout">Logout</a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="d-flex align-content-start gap-5 align-items-center justify-content-center h-100 w-100 flex-wrap">
+                    <h2 class="h2 w-100 text-center">Create New Task</h2>
+                    <form class="px-4 d-flex flex-wrap">
+                        <div class="mb-3 w-100">
+                            <label for="title"  class="form-label">Task title</label>
+                            <input class="form-control" type="text" id="formFile" required data-task-title>
+                        </div>
+                        <div class="mb-3 w-50">
+                            <label for="category" class="form-label" >Category</label>
+                            <select class="form-control" type="text" id="category" required data-task-category>
+                                <option value="Front">Front</option>
+                                <option value="Back">Back</option>
+                                <option value="Error-fixing">Error fixing</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 w-50">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-control" type="text" id="priority" data-task-priority required>
+                                <option value="Front">Low</option>
+                                <option value="Back">Medium</option>
+                                <option value="Error-fixing">High</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 w-100">
+                            <label for="content" class="form-label">Task details</label>
+                            <textarea data-task-details class="form-control" type="text" id="content" required></textarea>
+                        </div>
+                        <div class="mb-3 w-100">
+                            <label for="content"  class="form-label">Task due date</label>
+                            <input data-task-date class="form-control" type="date" id="content" required>
+                        </div>
+                        <div class="mb-3 w-100">
+                            <label for="user" class="form-label">Select user</label>
+                            <select class="form-control" type="text" id="user" data-task-user required>
+                                <option value="none">Seleccionar</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success w-50">
+                            + Crear
+                        </button>
+                        <button class="btn btn-info w-50 " type="button">
+                            Cancelar
+                        </button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./../js/logout.script.js"></script>
+    <script src="./../js/script.js"> </script>
+    <script src="./js/create-task.js" type="module" defer></script>
+</body>
+
+</html>
