@@ -1,0 +1,43 @@
+project:
+  id: web-express-mysql-practice
+  name: Express MySQL practice
+  description: Express REST API organized by model/service/controller/route that queries users, orders, products, and reports from MySQL through a promise-based connection pool.
+
+  type: api
+  categories:
+    - education
+    - web
+    - backend
+    - module-3
+  tags:
+    - nodejs
+    - express
+    - mysql
+    - rest-api
+    - clean-architecture
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - javascript
+      - sql
+    frameworks:
+      - express
+    databases:
+      - mysql
+    tools:
+      - dotenv
+      - mysql2
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/express_mysql_practice
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/express_mysql_practice
