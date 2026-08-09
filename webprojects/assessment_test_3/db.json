@@ -1,0 +1,53 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "user 1",
+      "email": "email@gmail.com",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "username": "user2",
+      "email": "student@gmail.com",
+      "password": "123456",
+      "role": "user",
+      "tasks": [
+        "1"
+      ]
+    },
+    {
+      "id": "5bc8",
+      "username": "username",
+      "email": "admin@ferreteria.com",
+      "password": "123456"
+    },
+    {
+      "id": "dd21",
+      "username": "eduardo de la cruz rodiriguez",
+      "email": "email2@gmail.com",
+      "password": "123456"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Nombre",
+      "details": "Este es el contenido de ejemplo de la tarea a realizar",
+      "expiration_date": "2026-10-09",
+      "state": "In-progress",
+      "priority": "High",
+      "user_id": "5bc8"
+    },
+    {
+      "id": "b1a0",
+      "title": "Tarea de prueba",
+      "details": "asdfasdfasdf",
+      "expiration_date": "2026-01-27",
+      "state": "Pending",
+      "priority": "Front",
+      "user_id": "dd21"
+    }
+  ]
+}

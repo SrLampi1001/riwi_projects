@@ -1,0 +1,53 @@
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a1026, #0f1b3d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e6e6e6;
+    font-family: system-ui, sans-serif;
+}
+.auth-card {
+    background: rgba(20, 30, 60, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+    padding: 2rem;
+    max-width: 420px;
+    width: 100%;
+}
+.auth-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+.nav-pills .nav-link {
+    color: #9fb4ff;
+}
+.nav-pills .nav-link.active {
+    background-color: #3b82f6;
+    color: #fff;
+}
+.form-control {
+    background-color: #0b1430;
+    border: 1px solid #2b3a75;
+    color: #fff;
+}
+.form-control:focus {
+    background-color: #0b1430;
+    color: #fff;
+    border-color: #3b82f6;
+    box-shadow: none;
+}
+.btn-primary {
+    background-color: #3b82f6;
+    border: none;
+}
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+.auth-footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #9aa4d6;
+    margin-top: 1.5rem;
+}

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./../styles/styles.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/styles.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main content -->
+            <aside class="col-md-2 px-4 py-4 row">
+                <nav class="navbar d-flex flex-column align-content-center ">
+                    <ul class="navbar-nav nav-pills">
+                        <li class="navbar-text fs-5 fw-bolder d-flex flex-nowrap gap-3">
+                            <img src="./../assets/icons/corbata_icon.png" alt="icon-crudzaso"
+                                class="d-inline-block w-25">
+                            <a href="#" class="nav-link">CRUDZASO</a>
+                        </li>
+                        <li class="navbar-text fs-5 fw-bold"><a href="#" class="nav-link active">Dashboard</a></li>
+                        <li class="navbar-text fs-5 fw-bold"><a href="#" class="nav-link">Tasks</a></li>
+                        <li class="navbar-text fs-5 fw-bold"><a href="#" class="nav-link">Profile</a></li>
+                    </ul>
+                </nav>
+            </aside>
+            <main class="col-md-10 p-0 row bg-secondary-subtle">
+                <nav class="navbar px-3 bg-white">
+                    <a class="d-inline-flex align-items-center fw-bold navbar-brand text-black" href="#"><i
+                            class="cono_icon"></i>>Dashboard</a>
+                    <div class="dropdown">
+                        <div class="d-inline-flex align-items-center gap-4 navbar-brand text-black" href="#">
+                            <div class="img-container profile-img">
+                                <img src="./assets/profile-img.jpg" alt="profile image" class="w-100">
+                            </div>
+                            <a href="#" class="nav-link fs-6 fw-bold">Alex Morgan</a>
+                            <a class="nav-link fs-6 text-danger" href="#" id="logout">Logout</a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="px-4 row">
+                    <h2 class="m-0">Task Manager</h2>
+                    <p class="text-muted mb-4">Overview of all current academic performance tasks.</p>
+                    <!-- Cards -->
+                    <div class="align-self-end text-end">
+                        <a href="./create-task.html" class="btn btn-info" type="button" id="new-task">
+                            + New Task
+                        </a>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"> <i class="bag_icon"></i> Total tasks</h5>
+                                    <h3 class="ps-3" data-tasks-amount>15</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"><i class="task_icon"></i>Users</h5>
+                                    <h3 class="ps-3" data-users-amount>15</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"><i class="bills_icon"></i>Pending</h5>
+                                    <h3 class="ps-3 text-warning" data-pending-tasks>14</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"><i class="bills_icon"></i>Overall Progress</h5>
+                                    <h3 class="ps-3 text-success" data-completion-rate>75%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                    <div class="row col-md-9">
+                        <div class="d-flex justify-content-between p-2 align-content-start">
+                            <h2 class="fw-bolder fs-4">
+                                <input type="text" class="form-text form-control" placeholder="Search a task">
+                            </h2>
+                            <ul class="nav nav-tabs" id="filter">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="#">All</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Pending</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Completed</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card p-0 overflow-hidden">
+                            <div class="card-body p-0">
+                                <table class="table table-striped table-light mb-0" id="table-tasks">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Task Name</th>
+                                            <th>Assignee</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Due date</th>
+                                            <th class="d-none">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="pagination d-flex justify-content-center align-items-center gap-3 mt-5">
+                            <button type="button" class="btn rounded-circle" id="previous-page">&lt;</button>
+                            <div class="pagination-numbers d-flex justify-content-center gap-3">
+                                <span class="btn rounded-circle bg-success-subtle">1</span>
+                            </div>
+                            <button type="button" class="btn rounded-circle" id="next-page">&gt;</button>
+                        </div>
+                    </div>
+                    <aside class="card col-md-3 p-0 m-2" id="task-editing">
+                        
+                    </aside>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./../js/logout.script.js"></script>
+    <script src="./../js/script.js"> </script>
+    <script src="./js/dashboard.js" type="module" defer></script>
+</body>
+
+</html>
