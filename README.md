@@ -40,4 +40,15 @@ There are tags in each project that will tell you the project state. <!--They sh
 | Complete | The project is complete as per the requirements and doesn't need any improvement | 
 | Incomplete | The project doesn't fit the full requirements of the assignment and needs improvement | 
 | Unsatisfactory | The project fits the full requirements of the assigment but can be improved | 
-| In Progress | The project has versions, and can be actively worked on | 
+| In Progress | The project has versions, and can be actively worked on |
+
+## Contributing
+
+Read [CONTRIBUTING.md](./CONTRIBUTING.md) for the branch model, how to add a
+new subtree project, and how to run the GitHub Actions locally.
+
+Use the templates when you open an issue or a pull request:
+
+- [Bug report](https://github.com/SrLampi1001/riwi_projects/issues/new?template=bug_report.yml)
+- [Feature request](https://github.com/SrLampi1001/riwi_projects/issues/new?template=feature_request.yml)
+- [Pull request template](./.github/PULL_REQUEST_TEMPLATE.md)

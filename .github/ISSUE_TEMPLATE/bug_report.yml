@@ -1,0 +1,60 @@
+name: Bug report
+description: Report a bug in a project.
+title: "[Bug] <project prefix>: <short description>"
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Fill in the sections below so
+        the issue can be reproduced and fixed.
+  - type: input
+    id: project
+    attributes:
+      label: Project
+      description: Which project has the bug?
+      placeholder: python/user_story_1
+    validations:
+      required: true
+  - type: input
+    id: branch
+    attributes:
+      label: Branch
+      description: Which branch does the bug appear on?
+      placeholder: project/python/user_story_1
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+      placeholder: The script prints the correct total.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+      placeholder: The script prints zero every time.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps to see the bug.
+      placeholder: |
+        1. Clone the branch.
+        2. Run the script with this input.
+        3. See the wrong output.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Add any other detail that helps.
+      placeholder: OS, Python version, Node version, screenshots.
