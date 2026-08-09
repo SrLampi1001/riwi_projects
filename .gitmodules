@@ -18,3 +18,7 @@
 	path = ai_workflows/scrumhub
 	url = https://github.com/gitcelula02/ScrumHub.git
 	branch = main
+[submodule "webprojects/scrumhub-mock-back"]
+	path = webprojects/scrumhub-mock-back
+	url = https://github.com/gitcelula02/mock-back.git
+	branch = main
