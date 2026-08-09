@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./../styles/styles.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main content -->
+            <aside class="col-md-2 px-4 py-4 row">
+                <nav class="navbar d-flex flex-column align-content-center ">
+                    <ul class="navbar-nav nav-pills">
+                        <li class="navbar-text fs-5 fw-bolder d-flex flex-nowrap gap-3">
+                            <img src="./../assets/icons/corbata_icon.png" alt="icon-crudzaso" class="d-inline-block w-25">
+                            <a href="#" class="nav-link">CRUDZASO</a>
+                        </li>
+                        <li class="navbar-text fs-5 fw-bold"><a href="#" class="nav-link active">Dashboard</a></li>
+                        <li class="navbar-text fs-5 fw-bold"><a href="#" class="nav-link">Tasks</a></li>
+                        <li class="navbar-text fs-5 fw-bold"><a href="#" class="nav-link">Profile</a></li>
+                    </ul>
+                </nav>
+            </aside>
+            <main class="col-md-10 p-0 row bg-secondary-subtle">
+                <nav class="navbar px-3 bg-white">
+                    <a class="d-inline-flex align-items-center fw-bold navbar-brand text-black" href="#"><i class="cono_icon"></i>>Dashboard</a>
+                    <div class="dropdown">
+                        <div class="d-inline-flex align-items-center gap-4 navbar-brand text-black" href="#">
+                            <div class="img-container profile-img">
+                                <img src="./assets/profile-img.jpg" alt="profile image" class="w-100">
+                            </div>
+                            <a href="#" class="nav-link fs-6 fw-bold">Alex Morgan</a>
+                            <a class="nav-link fs-6 text-danger" href="#" id="logout">Logout</a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="px-4 row">
+                    <h2 class="m-0">Task Manager</h2>
+                    <p class="text-muted mb-4">Overview of all current academic performance tasks.</p>
+                    <!-- Cards -->
+                    <div class="align-self-end text-end">
+                        <button class="btn btn-info" type="button" id="new-task">
+                            + New Task
+                        </button>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"> <i class="bag_icon"></i> Total tasks</h5>
+                                    <h3 class="ps-3" data-tasks-amount>15</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"><i class="task_icon"></i>Users</h5>
+                                    <h3 class="ps-3" data-users-amount>15</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"><i class="bills_icon"></i>Pending</h5>
+                                    <h3 class="ps-3 text-warning">14</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bolder"><i class="bills_icon"></i>Overall Progress</h5>
+                                    <h3 class="ps-3 text-success" data-completion-rate>75%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                    <div class="row col-md-9">
+                        <div class="d-flex justify-content-between p-2 align-content-start">
+                            <h2 class="fw-bolder fs-4">
+                                <input type="text" class="form-text form-control" placeholder="Search a task">
+                            </h2>
+                                <ul class="nav nav-tabs" id="filter">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href="#">All</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Pending</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Completed</a>
+                                    </li>
+                                </ul>
+                        </div>
+                        <div class="card p-0 overflow-hidden">
+                            <div class="card-body p-0">
+                                <table class="table table-striped table-light mb-0" id="table-tasks">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Task Name</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Due date</th>
+                                            <th class="d-none">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr class="table-active">
+                                        <td class="small text-secondary">1</td>
+                                        <td>Update Documentation</td>
+                                        <td>
+                                            <span class="small bg-info-subtle text-info-emphasis rounded-pill p-2">In progress</span>
+                                        </td>
+                                        <td class="text-warning">Medium</td>
+                                        <td class="text-secondary date">Oct 27, 14:30</td>
+                                        <td class="d-none"></td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="small text-secondary">1</td>
+                                        <td>Update Documentation</td>
+                                        <td><span class="small bg-warning-subtle text-warning-emphasis rounded-pill p-2">Pending</span></td>
+                                        <td class="text-danger">High</td>
+                                        <td class="text-secondary date">Oct 27, 14:30</td>
+                                        <td class="d-none"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="pagination d-flex justify-content-center align-items-center gap-3 mt-5">
+                        <button type="button" class="btn rounded-circle" id="previous-page">&lt;</button>
+                        <div class="pagination-numbers d-flex justify-content-center gap-3">
+                            <span class="btn rounded-circle bg-success-subtle">1</span>
+                        </div>
+                        <button type="button" class="btn rounded-circle" id="next-page">&gt;</button>
+                    </div>
+                </div>
+            <aside class="card col-md-3 p-0 m-2" id="task-editing">
+                <div class="card-header position-relative">
+                    <p class="small text-secondary m-0">Details</p>
+                    <span class="fw-bold" data-task-id>1</span>
+                    <select data-task-state class="small rounded-pill p-2 position-absolute top-0 end-0 mt-2 me-2 " name="state" id="task-state">
+                        <option value="Pending" data-class="bg-warning-subtle text-warning-emphasis">Pending</option>
+                        <option value="In progress" data-class="bg-info-subtle text-info-emphasis">In progress</option>
+                        <option value="Completed" data-class="bg-success-subtle text-success-emphasis">Completed</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="row pb-3 border-bottom border-black">
+                        <div class="d-flex flex-column col-12">
+                            <span class="fw-bold small" data-user-task>Sarag Lin</span>
+                            <span class="small text-secondary" data-user-email>saraglin@gmail.com</span>
+                            <span class="small text-secondary" data-user-number>+1 (555) 123-4567</span>
+                            <input type="text" class="fw-bolder fs-4 border-0 form-control" value="Task title"data-task-title>
+                            <textarea data-task-contents value="task contents and description..." class="border-0 form-control">task contents and description...</textarea>
+                            <label for="priority" class="text-secondary small">Task Priority: </label>
+                            <select name="priority" id="priority" class="fw-bold small border-0 bg-white m-0 p-0" data-priority-task>
+                                <option value="Low" data-class="bg-success-subtle text-success-emphasis">Low</option>
+                                    <option value="Medium" data-class="bg-warning-subtle text-warning-emphasis" selected>Medium</option>
+                                    <option value="High" data-class="bg-danger-subtle text-danger-emphasis">High</option>
+                                </select>
+                            <label for="expiration-date" class="text-secondary small">Date: </label>
+                            <input name="expiration-date" id="expiration-date" type="date" data-task-due-date class="text-secondary border-0 form-control"
+                                value="2026-12-15">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer row m-0 p-2 text-center">
+                    <button type="button" class="btn btn-danger col-md-4" data-cancel>Cancel</button>
+                    <button type="button" class="btn btn-success col-md-4" data-update>Update</button>
+                    <button type="button" class="btn btn-warning col-md-4" data-delete>Delete</button>
+                </div>
+            </aside>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/logout.script.js"></script>
+    <script src="./js/script.js"> </script>
+</body>
+
+</html>
