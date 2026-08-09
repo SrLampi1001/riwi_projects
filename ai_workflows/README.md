@@ -8,3 +8,5 @@ They are, for the most part, webprojects too, but they should be differentiated 
     > Branch: [https://github.com/SrLampi1001/riwi_projects/tree/project/ai_workflows/ai_assessment_test_simulacrum]
 - [AI assessment test 1](./ai_assessment_test_1/README.md)
     > Branch: [https://github.com/SrLampi1001/riwi_projects/tree/project/ai_workflows/ai_assessment_test_1]
+- [AI assessment test 2](./ai_assessment_test_2/README.md)
+    > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/ai_workflows/ai_assessment_test_2]

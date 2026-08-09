@@ -94,5 +94,8 @@ jobs:
       #- name: Push AI assessment test simulacrum
       #  run: git subtree push --prefix=ai_workflows/ai_assessment_test_simulacrum origin project/ai_workflows/ai_assessment_test_simulacrum && echo "No changes or error on AI Assessment Test Simulacrum"
 
-      - name: Push AI Assessment test
-        run: git subtree push --prefix=ai_workflows/ai_assessment_test_1 origin project/ai_workflows/ai_assessment_test_1 && echo "No changes or errors on AI assessment test 1"
+      #- name: Push AI Assessment test
+      #  run: git subtree push --prefix=ai_workflows/ai_assessment_test_1 origin project/ai_workflows/ai_assessment_test_1 && echo "No changes or errors on AI assessment test 1"
+
+      - name: Push AI Assessment test 2
+        run: git subtree push --prefix=ai_workflows/ai_assessment_test_2 origin project/ai_workflows/ai_assessment_test_2 && echo "No changes or errors on AI assessment test 2"
