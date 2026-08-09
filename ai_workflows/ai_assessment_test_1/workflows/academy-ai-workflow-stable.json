@@ -1,0 +1,457 @@
+{
+  "name": "Academy AI Q&A - Standard Nodes",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "lastNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 400],
+      "webhookId": "academy-webhook"
+    },
+    {
+      "parameters": {
+        "updates": ["message"]
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 200],
+      "webhookId": "academy-telegram"
+    },
+    {
+      "parameters": {
+        "pollTimes": "every5m"
+      },
+      "id": "email-trigger",
+      "name": "Email Trigger",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [0, 600],
+      "credentials": {
+        "imap": {
+          "id": "imap-creds",
+          "name": "IMAP Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize input from any source\nconst isWebhook = !!$node['Webhook Trigger'];\nconst isTelegram = !!$node['Telegram Trigger'];\nconst isEmail = !!$node['Email Trigger'];\n\nlet userInput = '';\nlet source = 'unknown';\nlet replyTo = '';\n\nif (isWebhook) {\n  const data = $node['Webhook Trigger'].json.body || $node['Webhook Trigger'].json;\n  userInput = data.question || data.message || data.text || '';\n  source = 'webhook';\n  replyTo = data.chat_id || data.user_id || '';\n} else if (isTelegram) {\n  const data = $node['Telegram Trigger'].json;\n  userInput = data.message?.text || data.text || '';\n  source = 'telegram';\n  replyTo = data.message?.chat?.id || data.chat?.id || '';\n} else if (isEmail) {\n  const data = $node['Email Trigger'].json;\n  userInput = data.textPlain || data.body || data.subject || '';\n  source = 'email';\n  replyTo = data.from?.address || data.from || '';\n}\n\n// Detect language (simple heuristic)\nconst spanishWords = ['hola', 'gracias', 'precio', 'horario', 'cuanto', 'cuando', 'como', 'quiero', 'necesito'];\nconst isSpanish = spanishWords.some(w => userInput.toLowerCase().includes(w));\n\nreturn [{\n  json: {\n    userInput: userInput.trim(),\n    source: source,\n    replyTo: replyTo,\n    language: isSpanish ? 'es' : 'en',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "normalize-input",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [250, 400]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=cache:question:{{ $json.userInput.toLowerCase().trim() }}"
+      },
+      "id": "check-cache",
+      "name": "Check Redis Cache",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1.2,
+      "position": [500, 400],
+      "credentials": {
+        "redis": {
+          "id": "redis-creds",
+          "name": "Redis API"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check if we have a cached response\nconst cacheResult = $node['Check Redis Cache'].json;\n\nif (cacheResult && cacheResult.value) {\n  // Return cached response\n  const cached = JSON.parse(cacheResult.value);\n  return [{ json: { ...cached, fromCache: true } }];\n}\n\n// No cache - continue with AI processing\nreturn [{ json: { continue: true, userInput: $('Normalize Input').first().json.userInput, language: $('Normalize Input').first().json.language } }];"
+      },
+      "id": "check-cache-result",
+      "name": "Check Cache Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 400]
+    },
+    {
+      "parameters": {
+        "filePath": "/data/rag/rag_context.txt"
+      },
+      "id": "read-rag",
+      "name": "Read RAG Context",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract relevant RAG context based on the question\nconst question = $('Normalize Input').first().json.userInput.toLowerCase();\nconst ragContent = $node['Read RAG Context'].json.data.toString();\n\n// Keywords to section mapping\nconst sections = {\n  'schedule': ragContent.match(/#{1,3}\\s*SCHEDULES?[\\s\\S]*?(?=#{1,3}\\s*[A-Z]|$)/gi)?.[0] || '',\n  'price': ragContent.match(/#{1,3}\\s*PRICE[\\s\\S]*?(?=#{1,3}\\s*[A-Z]|$)/gi)?.[0] || '',\n  'level': ragContent.match(/#{1,3}\\s*(LANGUAGE\\s*)?LEVELS?[\\s\\S]*?(?=#{1,3}\\s*[A-Z]|$)/gi)?.[0] || '',\n  'inscription': ragContent.match(/#{1,3}\\s*INSCRIPTION[\\s\\S]*?(?=#{1,3}\\s*[A-Z]|$)/gi)?.[0] || '',\n  'certification': ragContent.match(/#{1,3}\\s*CERTIFICATION[\\s\\S]*?(?=#{1,3}\\s*[A-Z]|$)/gi)?.[0] || '',\n  'modality': ragContent.match(/#{1,3}\\s*MODALIT[\\s\\S]*?(?=#{1,3}\\s*[A-Z]|$)/gi)?.[0] || ''\n};\n\n// Find relevant sections based on keywords in question\nconst keywords = {\n  'schedule': ['horario', 'schedule', 'clase', 'hora', 'manana', 'tarde', 'noche', 'dia', 'lunes', 'martes'],\n  'price': ['precio', 'price', 'costo', 'cuanto', 'pago', 'mensual', 'cuota', 'dolares', 'pesos'],\n  'level': ['nivel', 'level', 'basico', 'intermedio', 'avanzado', 'principiante', 'beginner'],\n  'inscription': ['inscripcion', 'enrollment', 'registro', 'matricular', 'registrar', 'inscribirse'],\n  'certification': ['certificado', 'certification', 'certificado', 'examen', 'exams', 'diploma'],\n  'modality': ['modalidad', 'modality', 'presencial', 'online', 'virtual', 'hibrido', 'hybrid', 'self-paced', 'autodidacta']\n};\n\nlet relevantContext = '';\nfor (const [section, words] of Object.entries(keywords)) {\n  if (words.some(w => question.includes(w))) {\n    relevantContext += sections[section] + '\\n\\n';\n  }\n}\n\n// If no specific section found, return intro and general info\nif (!relevantContext) {\n  relevantContext = ragContent.substring(0, 2000);\n}\n\nconst language = $('Normalize Input').first().json.language;\nconst systemPrompt = language === 'es'\n  ? 'Eres un asistente útil de una Academia de Idiomas en Colombia. SOLO responde preguntas basándote en el contexto proporcionado. Si la respuesta no está en el contexto, responde EXACTAMENTE con: [HANDOFF_REQUIRED]'\n  : 'You are a helpful assistant for a Foreign Languages Academy in Colombia. ONLY answer questions based on the provided context. If the answer is not in the context, respond EXACTLY with: [HANDOFF_REQUIRED]';\n\nreturn [{\n  json: {\n    relevantContext: relevantContext || ragContent.substring(0, 2000),\n    question: question,\n    language: language,\n    systemPrompt: systemPrompt\n  }\n}];"
+      },
+      "id": "extract-rag",
+      "name": "Extract Relevant RAG",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $env.GOOGLE_API_KEY }}",
+        "sendBody": true,
+        "bodyContentType": "json",
+        "options": {}
+      },
+      "id": "gemini-request",
+      "name": "Gemini API Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 400],
+      "bodyJson": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "={{ $json.systemPrompt }}\n\nContext:\n{{ $json.relevantContext }}\n\nQuestion: {{ $('Normalize Input').first().json.userInput }}"
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "temperature": 0.3,
+          "maxOutputTokens": 800
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Gemini response\nconst response = $input.first().json;\nconst normalizeData = $('Normalize Input').first().json;\n\nlet answer = '';\n\nif (response.data?.candidates?.[0]?.content?.parts?.[0]?.text) {\n  answer = response.data.candidates[0].content.parts[0].text;\n} else if (response.error) {\n  answer = normalizeData.language === 'es'\n    ? 'Lo siento, hubo un error al procesar tu pregunta. Por favor, intenta más tarde.'\n    : 'Sorry, there was an error processing your question. Please try again later.';\n}\n\nconst needsHandoff = answer.includes('[HANDOFF_REQUIRED]');\n\nif (needsHandoff) {\n  answer = normalizeData.language === 'es'\n    ? 'Lo siento, no tengo esa información en mi base de conocimientos. Por favor, contacta a la academia directamente para obtener más ayuda.'\n    : 'I\\'m sorry, I don\\'t have that information in my knowledge base. Please contact the academy directly for more help.';\n}\n\nconst result = {\n  answer: answer,\n  needsHandoff: needsHandoff,\n  source: normalizeData.source,\n  replyTo: normalizeData.replyTo,\n  language: normalizeData.language,\n  originalQuestion: normalizeData.userInput\n};\n\n// Save to cache (only successful, non-handoff responses)\nif (!needsHandoff && answer) {\n  $node['Save to Cache'].json = { ...result, cacheKey: 'cache:question:' + normalizeData.userInput.toLowerCase().trim() };\n}\n\nreturn [{\n  json: result\n}];"
+      },
+      "id": "parse-gemini",
+      "name": "Parse Gemini Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1500, 400]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $json.cacheKey }}",
+        "value": "={{ JSON.stringify({ answer: $json.answer, source: $json.source, language: $json.language }) }}"
+      },
+      "id": "save-cache",
+      "name": "Save to Cache",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1.2,
+      "position": [1700, 400],
+      "credentials": {
+        "redis": {
+          "id": "redis-creds",
+          "name": "Redis API"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cache-hit",
+              "leftValue": "={{ $('Check Cache Result').first().json.fromCache }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-if-cached",
+      "name": "Is Cached?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [700, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "id": "needs-handoff",
+              "leftValue": "={{ $json.needsHandoff }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-handoff",
+      "name": "Needs Handoff?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1900, 400]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.HUMAN_SUPPORT_CHAT_ID }}",
+        "text": "=New handoff request!\nSource: {{ $json.source }}\nUser: {{ $json.replyTo }}\nQuestion: {{ $json.originalQuestion }}"
+      },
+      "id": "telegram-admin",
+      "name": "Telegram Admin Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [2100, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $env.HUMAN_SUPPORT_EMAIL }}",
+        "subject": "Human Handoff Required - Academy AI",
+        "text": "=New handoff request!\nSource: {{ $json.source }}\nUser: {{ $json.replyTo }}\nQuestion: {{ $json.originalQuestion }}"
+      },
+      "id": "email-admin",
+      "name": "Email Admin Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [2100, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.replyTo }}",
+        "text": "={{ $json.answer }}",
+        "additionalFields": {}
+      },
+      "id": "telegram-reply",
+      "name": "Reply to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [2100, 500]
+    },
+    {
+      "parameters": {
+        "toEmail": "={{ $json.replyTo }}",
+        "subject": "Re: Your question to Foreign Languages Academy",
+        "text": "={{ $json.answer }}"
+      },
+      "id": "email-reply",
+      "name": "Reply to Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [2100, 600]
+    },
+    {
+      "parameters": {
+        "respondWith": "responseNode",
+        "responseBody": "={\n  \"answer\": \"{{ $json.answer }}\",\n  \"source\": \"{{ $json.source }}\",\n  \"cached\": false\n}"
+      },
+      "id": "webhook-reply",
+      "name": "Webhook Reply",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [2100, 700]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "Check Redis Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Redis Cache": {
+      "main": [
+        [
+          {
+            "node": "Check Cache Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Cache Result": {
+      "main": [
+        [
+          {
+            "node": "Is Cached?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Cached?": {
+      "main": [
+        [
+          {
+            "node": "Reply to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read RAG Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RAG Context": {
+      "main": [
+        [
+          {
+            "node": "Extract Relevant RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Relevant RAG": {
+      "main": [
+        [
+          {
+            "node": "Gemini API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini API Request": {
+      "main": [
+        [
+          {
+            "node": "Parse Gemini Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Gemini Response": {
+      "main": [
+        [
+          {
+            "node": "Save to Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Cache": {
+      "main": [
+        [
+          {
+            "node": "Needs Handoff?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Handoff?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Admin Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Admin Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply to Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reply to Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "America/Bogota"
+  },
+  "staticData": null,
+  "tags": ["ai", "academy", "gemini", "redis", "cache"]
+}

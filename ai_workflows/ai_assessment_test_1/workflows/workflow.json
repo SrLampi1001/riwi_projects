@@ -1,0 +1,385 @@
+{
+  "name": "AI Assistant with Gemini RAG and Human Handoff",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 2048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -144
+      ],
+      "id": "0609c721-8b4e-4d99-b44f-52ffeae04fcc",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aJxzAHwzLZO1TPrx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        -48
+      ],
+      "id": "0936257e-e7a8-42ed-9776-3f6331c4dd65",
+      "name": "Email Trigger (IMAP)",
+      "alwaysOutputData": true,
+      "credentials": {
+        "imap": {
+          "id": "Bwh6IvKegiNUeAcg",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.userInput }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant for Foreign Languages Academy Made in Colombia. Use the provided 'Vector Store Tool' to find information in the uploaded context file before answering. Answer questions about schedules, prices, levels, inscriptions, certifications, and modalities in English and Spanish.\n\nIMPORTANT INSTRUCTION: If the user refers to something that is not in the context or requires human intervention (e.g. complaints, or questions you cannot answer using the Vector Store Tool), respond EXACTLY with the string: [HANDOFF_REQUIRED]. Otherwise, answer normally based only on the context found."
+        }
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -320
+      ],
+      "id": "2bbde9e5-8d8d-40b5-87fa-b09713979d6c"
+    },
+    {
+      "parameters": {},
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -96
+      ],
+      "id": "00542389-d33d-451f-b2f1-7facaf0f7c19"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook Trigger1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -512
+      ],
+      "id": "5c709702-cb42-45d8-a200-9c0ac8d51a83",
+      "webhookId": "cfdc2c3e-9e4b-487c-9a12-1d59f511bb69"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "userInput",
+              "value": "={{ $json.body?.message || $json.message?.text || $json.textPlain || '' }}"
+            },
+            {
+              "name": "source",
+              "value": "={{ $node['Webhook Trigger1'] ? 'webhook' : ($node['Telegram Trigger1'] ? 'telegram' : 'email') }}"
+            },
+            {
+              "name": "replyTo",
+              "value": "={{ $json.message?.chat?.id || $json.from?.address || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Normalize Input1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -320
+      ],
+      "id": "c86c8c4b-a1d9-493d-bafa-14540c78ecf3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.output }}",
+              "operation": "contains",
+              "value2": "[HANDOFF_REQUIRED]"
+            }
+          ]
+        }
+      },
+      "name": "Check Handoff1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -320
+      ],
+      "id": "3db6105c-8d41-441d-bc80-9cbad056bf85"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.HUMAN_SUPPORT_EMAIL }}",
+        "toEmail": "={{ $env.HUMAN_SUPPORT_EMAIL }}",
+        "subject": "Human Handoff Required",
+        "text": "=User requested help. Source: {{ $json.source }}\nReply info: {{ $json.replyTo }}\nOriginal Query: {{ $item(0).$node['Normalize Input1'].json.userInput }}",
+        "options": {}
+      },
+      "name": "Email Handoff Alert1",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -432
+      ],
+      "id": "da84126f-70aa-4199-ad5e-b410a94fc642",
+      "credentials": {
+        "smtp": {
+          "id": "z0Vt222ePEdWVx5T",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "messageToUser",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Respond to User1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -192
+      ],
+      "id": "8ce342d8-91e1-4d86-b285-399dea2c5e62"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "messageToUser",
+              "value": "I don't have that information. Please contact the academy directly. I'll send your solicitud to an assesor. "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Handoff Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -416
+      ],
+      "id": "cb70e7c5-c352-49e5-9456-050f45d0f742"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "name": "Telegram Trigger1",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -288
+      ],
+      "id": "d26d13fd-6ab8-4d0e-9d13-71c50ee4cd82",
+      "webhookId": "507d6bd2-e757-4141-89ac-cab84b4483aa"
+    },
+    {
+      "parameters": {
+        "content": "## Notice\nI don't have telegram so I couldn't test the telegram route. If you use the environment variables of your own account it may work",
+        "height": 224,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -848,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "3b9ebe17-75c9-4219-b701-044010397ac5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "filePath": "/data/rag/rag_context.txt"
+      },
+      "id": "f81e5aa6-beca-49ae-8dbb-16cb44fc0a89",
+      "name": "Read RAG Context1",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -320
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Check Handoff1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input1": {
+      "main": [
+        [
+          {
+            "node": "Read RAG Context1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Handoff1": {
+      "main": [
+        [
+          {
+            "node": "Set Handoff Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to User1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Handoff Message": {
+      "main": [
+        [
+          {
+            "node": "Email Handoff Alert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RAG Context1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "94836f93-2a1c-4eff-8ee2-8b8ef4f9467c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8799c276bea20987942cfb22adb42ed6a3eb57a135149884f4273aaf97e8ec97"
+  },
+  "id": "8coqA1aV4POOrxJe",
+  "tags": []
+}
