@@ -6,3 +6,5 @@ They are, for the most part, webprojects too, but they should be differentiated 
 ## Index
 - [AI assessment test simulacrum](./ai_assessment_test_simulacrum/README.md)
     > Branch: [https://github.com/SrLampi1001/riwi_projects/tree/project/ai_workflows/ai_assessment_test_simulacrum]
+- [AI assessment test 1](./ai_assessment_test_1/README.md)
+    > Branch: [https://github.com/SrLampi1001/riwi_projects/tree/project/ai_workflows/ai_assessment_test_1]
