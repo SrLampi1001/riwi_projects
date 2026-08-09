@@ -37,10 +37,10 @@ This project is made following the model, service, controller, route convention.
          │   ├── orders.controller.js
          │   └── orders.routes.js
          ├── products/
-         │   │   ├── users.model.js
-         │   ├── users.service.js
-         │   ├── users.controller.js
-         │   └──users.routes.js products.routes.js
+         │   ├── products.model.js
+         │   ├── products.service.js
+         │   ├── products.controller.js
+         │   └── products.routes.js 
          └── reports/
              ├── reports.model.js
              ├── reports.service.js
