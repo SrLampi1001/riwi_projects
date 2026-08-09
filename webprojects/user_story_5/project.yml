@@ -1,0 +1,36 @@
+project:
+  id: web-user-story-5
+  name: User Story 5
+  description: Module 3 user story 2 — demonstrates JavaScript data structures (Set, Map, Object) through a Productos class with a static ID counter and object utility methods.
+
+  type: script
+  categories:
+    - education
+    - web
+    - user-story
+    - module-3
+  tags:
+    - javascript
+    - data-structures
+    - set
+    - map
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - javascript
+    tools:
+      - node
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/user_story_5
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/user_story_5

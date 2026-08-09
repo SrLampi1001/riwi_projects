@@ -1,0 +1,55 @@
+project:
+  id: ai-assessment-test-2
+  name: AI assessment test 2
+  description: VoiceAgent — bilingual Spanish/English voice tutor built with React, Express, browser Speech APIs, NVIDIA NIM (Mistral) function calling for dictionary and translation tools, MongoDB session memory, and a pgvector-ready Postgres. The project is marked incomplete in its README.
+
+  type: web-app
+  categories:
+    - education
+    - ai
+    - assessment-test
+    - module-4
+  tags:
+    - react
+    - express
+    - mongodb
+    - postgresql
+    - pgvector
+    - voice
+    - stt
+    - tts
+    - nvidia-nim
+    - mistral
+
+  status: incomplete
+
+  tech_stack:
+    languages:
+      - typescript
+      - javascript
+    frameworks:
+      - react
+      - vite
+      - express
+    databases:
+      - mongodb
+      - postgresql
+      - pgvector
+    ai:
+      - nvidia-nim
+      - mistral
+    tools:
+      - docker
+      - web-speech-api
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/ai_workflows/ai_assessment_test_2
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: ai_workflows/ai_assessment_test_2

@@ -12,10 +12,8 @@ Persistent documentation that lives at the root of the repository. This folder i
 ## What belongs here
 
 - The metadata contract and any future schema definitions.
-- Cross-cutting guides that apply to the whole repository (e.g. release
-  process, branching model supplements).
-- Indexes or tables that aggregate data from per-project `project.yml`
-  files.
+- Cross-cutting guides that apply to the whole repository (e.g. release process, branching model supplements).
+- Indexes or tables that aggregate data from per-project `project.yml` files.
 
 ## What does **not** belong here
 

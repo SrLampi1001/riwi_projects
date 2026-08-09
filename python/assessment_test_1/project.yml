@@ -1,0 +1,36 @@
+project:
+  id: python-assessment-test-1
+  name: Assessment test 1
+  description: Module 1 final test — a console-based library system that manages inventory, customers, sales, and reporting entirely in memory.
+
+  type: cli
+  categories:
+    - education
+    - python
+    - assessment-test
+    - module-1
+  tags:
+    - console
+    - inventory
+    - sales
+    - reports
+    - in-memory
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/assessment_test_1
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/assessment_test_1

@@ -1,0 +1,35 @@
+project:
+  id: python-mini-projects
+  name: Mini-projects
+  description: A collection of ten small Python scripts (library, to-do, calculator, e-commerce, recipes, banking, theater, students, guessing game, expenses). 3 of 10 are currently implemented; the README also contains an unresolved merge conflict that needs cleanup.
+
+  type: script
+  categories:
+    - education
+    - python
+    - mini-project
+    - module-1
+  tags:
+    - fundamentals
+    - collections
+    - console
+    - multi-script
+
+  status: in progress
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/mini-projects
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/mini-projects

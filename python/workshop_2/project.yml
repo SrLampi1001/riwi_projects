@@ -1,0 +1,35 @@
+project:
+  id: python-workshop-2
+  name: Python Workshop 2
+  description: Module 1 Workshop 2 — a single Python script that registers, lists, searches, updates, and removes inventory products.
+
+  type: script
+  categories:
+    - education
+    - python
+    - workshop
+    - module-1
+  tags:
+    - fundamentals
+    - crud
+    - inventory
+    - console
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/workshop_2
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/workshop_2

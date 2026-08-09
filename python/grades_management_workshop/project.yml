@@ -1,0 +1,34 @@
+project:
+  id: python-grades-management
+  name: Grades management workshop
+  description: Module 1 workshop that accepts N grades, computes the average, and classifies the result. The grade validation rejects valid one-decimal grades (e.g. 2.3, 2.5, 3.3) due to a floating-point approximation error in the allowed-grades set.
+
+  type: script
+  categories:
+    - education
+    - python
+    - workshop
+    - module-1
+  tags:
+    - fundamentals
+    - validation
+    - bug
+
+  status: incomplete
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/grades_management_workshop
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/grades_management_workshop

@@ -1,0 +1,39 @@
+project:
+  id: web-assessment-test-2
+  name: Assessment test 2
+  description: Module 2 assessment test — responsive recreation of the Clipboard product landing page using semantic HTML, external CSS with Google Fonts, and Flexbox/CSS Grid for desktop, tablet, and phone breakpoints.
+
+  type: static-site
+  categories:
+    - education
+    - web
+    - assessment-test
+    - module-2
+  tags:
+    - html
+    - css
+    - responsive
+    - flexbox
+    - css-grid
+    - landing-page
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - html
+      - css
+    tools:
+      - git
+      - google-fonts
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/assessment_test_2
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/assessment_test_2

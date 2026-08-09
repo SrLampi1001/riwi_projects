@@ -1,0 +1,43 @@
+project:
+  id: web-user-story-6
+  name: User Story 6
+  description: Module 3 user story 3 — Kepler 22b forum with account and post CRUD operations, persisted through JSON Server and local storage, themed around the Sinteryum/Dartumbria/Midnight Twilight lore.
+
+  type: web-app
+  categories:
+    - education
+    - web
+    - user-story
+    - module-3
+  tags:
+    - html
+    - css
+    - javascript
+    - json-server
+    - crud
+    - forum
+    - localstorage
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - html
+      - css
+      - javascript
+    frameworks:
+      - json-server
+    tools:
+      - node
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/user_story_6
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/user_story_6

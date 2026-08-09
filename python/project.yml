@@ -1,0 +1,35 @@
+project:
+  id: python
+  name: Python projects
+  description: Python fundamentals, user stories, workshops, mini-projects, and the first module's assessment test, all from Riwi Module 1.
+
+  type: collection
+  categories:
+    - education
+    - python
+    - module-1
+  tags:
+    - fundamentals
+    - scripting
+    - console
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python
+
+  presentation:
+    featured: true
+    order: 1

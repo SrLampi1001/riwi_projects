@@ -1,0 +1,43 @@
+project:
+  id: web-simple-storage
+  name: Simple Storage
+  description: Module 3 user story — small full-stack application that performs user CRUD through a vanilla HTML/CSS/JS frontend and a json-server mock REST API.
+
+  type: web-app
+  categories:
+    - education
+    - web
+    - fullstack
+    - module-3
+  tags:
+    - javascript
+    - html
+    - css
+    - json-server
+    - crud
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - html
+      - css
+      - javascript
+    frameworks:
+      - json-server
+    databases:
+      - json
+    tools:
+      - node
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/simple_storage
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/simple_storage

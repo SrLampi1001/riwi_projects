@@ -1,0 +1,36 @@
+project:
+  id: infrastructure
+  name: Infrastructure
+  description: Infrastructure-as-code and cloud-deployed projects where the deployment platform is the primary subject, including Azure, AWS, and Terraform setups.
+
+  type: collection
+  categories:
+    - education
+    - infrastructure
+    - cloud
+  tags:
+    - azure
+    - terraform
+    - iac
+    - devops
+
+  tech_stack:
+    tools:
+      - terraform
+      - azure
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/infrastructure
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: infrastructure
+
+  presentation:
+    featured: false
+    order: 5
