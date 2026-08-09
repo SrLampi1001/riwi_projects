@@ -3,8 +3,8 @@
   "private": true,
   "description": "Dev tooling for markdown linting and relative link validation",
   "scripts": {
-    "lint:md": "markdownlint-cli2 README.md python/README.md webprojects/README.md ai_workflows/README.md",
-    "check:links": "remark --use remark-gfm --use remark-validate-links --frail README.md python/README.md webprojects/README.md ai_workflows/README.md"
+    "lint:md": "markdownlint-cli2 README.md CONTRIBUTING.md python/README.md webprojects/README.md ai_workflows/README.md",
+    "check:links": "remark --use remark-gfm --use remark-validate-links --frail README.md CONTRIBUTING.md python/README.md webprojects/README.md ai_workflows/README.md"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.18.1",

@@ -16,7 +16,7 @@ Submodules (`webprojects/kepler_page`, `webprojects/portfolio`) are refreshed we
 Both `main` and `develop` have the same protection rules configured in the repository settings:
 
 - Pull request required to merge (no direct pushes).
-- Required status checks: `actionlint`, `Markdown lint`, `Relative link check`.
+- Required status checks: `Markdown lint`, `Relative link check`. (`actionlint` runs whenever a workflow file under `.github/workflows/` is changed, but it is not a merge gate because it has nothing to validate on PRs that don't touch workflow files.)
 - Linear history (rebase or squash merges).
 - All PR conversation comments must be resolved before merge.
 - No force pushes, no branch deletion.
