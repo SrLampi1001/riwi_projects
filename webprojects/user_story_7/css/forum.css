@@ -1,0 +1,90 @@
+
+body {
+  background: linear-gradient(90deg, #0b1020, #2b3458);
+  color: #e8ecff;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding-top: 1rem;
+}
+.nav-link {
+  color: #cfd6ff;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+}
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.feed-header {
+  position: sticky;
+  top: 0;
+  background-color: rgba(10, 15, 40, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  z-index: 10;
+}
+.post {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 1.25rem;
+  transition: background 0.2s ease;
+}
+.post:hover {
+  background-color: rgba(255,255,255,0.04);
+}
+.badge-díaeterno {
+  background-color: #ffd86f;
+  color: #0b1020;
+}
+.badge-nocheeterna {
+  background-color: #6f7dff;
+}
+.badge-crepúsculo {
+  background-color: #6fffd2;
+  color: #0b1020;
+}
+.card-lore {
+  background-color: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+}
+/* ── FORM INPUTS – keep the dark theme ── */
+#newPostForm .form-control {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+}
+#newPostForm .form-control:focus {
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 0 0 .25rem rgba(255,216,111,.25);
+}
+
+/* ── DROPDOWN BUTTON – make it look like a three‑dot icon ── */
+.dropdown-toggle::after {
+  display: none;               /* hide default caret */
+}
+.dropdown-toggle::before {
+  content: "···";              /* three‑dot character */
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #e8ecff;
+  vertical-align: middle;
+}
+
+/* Keep the hover background consistent with other links */
+.dropdown-toggle:hover,
+.dropdown-toggle:focus {
+  background-color: rgba(255,255,255,0.08);
+}
+
+/* Optional: give the “Eliminar” item a red hover */
+.dropdown-item.text-danger:hover {
+  background: rgba(255,0,0,.15);
+}
