@@ -1,0 +1,44 @@
+project:
+  id: web-user-story-7
+  name: User Story 7
+  description: Module 3 user story 4 — expansion of the Kepler 22b forum with persisted users, authentication, and post management backed by JSON Server and local storage.
+
+  type: web-app
+  categories:
+    - education
+    - web
+    - user-story
+    - module-3
+  tags:
+    - html
+    - css
+    - javascript
+    - json-server
+    - crud
+    - forum
+    - auth
+    - localstorage
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - html
+      - css
+      - javascript
+    frameworks:
+      - json-server
+    tools:
+      - node
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/user_story_7
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/user_story_7
