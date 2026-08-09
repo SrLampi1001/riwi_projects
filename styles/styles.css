@@ -1,0 +1,39 @@
+.btn{
+    width: 100%;
+}
+
+.contenedor{
+    display: flex;
+    margin: 20px 20px 20px 40px;
+}
+
+/* .contenedorCards{
+    display: flex;
+    width: 200px;
+    margin: 20px;
+    padding: 20px;
+} */
+
+.card{
+    margin: 20px;
+}
+.smll-card{
+    width: 18rem;
+}
+.theme-light .card{
+    background-color: white;
+}
+
+.theme-dark{
+    background-color: black;
+}
+
+.theme-dark .card{
+    background-color: #666;
+    color: white;
+    
+}
+
+.rainbow-background{
+    background:linear-gradient(to left, red 15%,orange 20%, yellow, green, blue, purple);
+}
