@@ -92,4 +92,4 @@ jobs:
       #  run: git subtree push --prefix=webprojects/docusaurus_documentation origin project/web/docusaurus_documentation && echo "No changes or error on Docusaurus Documentation"
 
       - name: Push AI assessment test simulacrum
-        run: git subtree push --prefix=ai_workflows/ai_assessment_test_simulacrum origin project/ai_workflows/ai_assessment_test_simulacrum && encho "No changes or error on AI Assessment Test Simulacrum"
+        run: git subtree push --prefix=ai_workflows/ai_assessment_test_simulacrum origin project/ai_workflows/ai_assessment_test_simulacrum && echo "No changes or error on AI Assessment Test Simulacrum"
