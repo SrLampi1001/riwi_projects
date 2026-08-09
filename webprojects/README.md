@@ -23,5 +23,9 @@ Backend only projects aren't part of the webpages collection, only if they have 
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/assessment_test_3]
 - [Kepler Page](./kepler_page/README.md)
     > Repository [https://github.com/SrLampi1001/kepler_page]
-- [User Story 6](./user_story_6/README.md)
+- [User story 6](./user_story_6/README.md)
     > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/user_story_6]
+- [User story 7](./user_story_7/README.md)
+    > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/user_story_7]
+- [Express Mysql practice](./express_mysql_practice/README.md)
+    > Branch [https://github.com/SrLampi1001/riwi_projects/tree/project/web/express_mysql_practice]
