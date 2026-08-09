@@ -1,0 +1,20 @@
+body {
+  background-color: #f8f9fa;
+}
+.dashboard {
+  max-width: 800px;
+  margin: 50px auto;
+}
+.note-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem .75rem;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: .25rem;
+  margin-bottom: .5rem;
+}
+.note-list li .btn {
+  margin-left: 10px;
+}
