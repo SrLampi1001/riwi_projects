@@ -72,3 +72,6 @@ jobs:
       
       - name: Push assessment test 3
         run: git subtree push --prefix=webprojects/assessment_test_3 origin project/web/assessment_test_3 && echo "No changes or error on Assessment test 3 (module 3)"
+      
+      - name: Push User story 6
+        run: git subtree push --prefix=webprojects/user_story_6 origin project/web/user_story_6 && echo "No changes or error on User story 6 with JavaScript and JSON Server"
