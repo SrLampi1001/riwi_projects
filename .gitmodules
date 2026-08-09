@@ -14,3 +14,7 @@
 	path = ai_workflows/poison-ai-app
 	url = https://github.com/Data-Poison-AI/backend.git
 	branch = main
+[submodule "ai_workflows/scrumhub"]
+	path = ai_workflows/scrumhub
+	url = https://github.com/gitcelula02/ScrumHub.git
+	branch = main
