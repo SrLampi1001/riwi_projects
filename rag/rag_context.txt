@@ -1,0 +1,144 @@
+# Foreign Languages Academy - RAG Context
+# This document contains the knowledge base for the AI assistant.
+# Update this file to add new information, then restart the n8n container.
+#
+# Supported topics:
+# - Schedules
+# - Prices
+# - Levels
+# - Inscriptions
+# - Certifications
+# - Modalities
+#
+# The AI should answer questions ONLY based on the information provided here.
+# If a question cannot be answered from this context, the AI should respond
+# that it doesn't have the information and suggest contacting the academy directly.
+
+# ===========================================
+# ACADEMY INFORMATION
+# ===========================================
+
+Academy Name: Foreign Languages Academy
+Location: Colombia
+Languages Offered: English, Spanish (and others)
+
+# ===========================================
+# SCHEDULES
+# ===========================================
+
+Schedule Information:
+- Morning classes: 8:00 AM - 12:00 PM
+- Afternoon classes: 2:00 PM - 6:00 PM
+- Evening classes: 6:00 PM - 9:00 PM
+- Classes are available from Monday to Friday
+- Weekend classes: Saturday 9:00 AM - 2:00 PM
+
+# ===========================================
+# PRICE INFORMATION
+# ===========================================
+
+Pricing Structure:
+- Monthly payment per language: $150,000 COP
+- Quarterly payment (3 months): $400,000 COP (save $50,000)
+- Semi-annual payment (6 months): $750,000 COP (save $150,000)
+- Annual payment (12 months): $1,400,000 COP (save $400,000)
+
+Group classes (minimum 5 students): 20% discount
+Private classes: +50% of regular price
+
+# ===========================================
+# LANGUAGE LEVELS
+# ===========================================
+
+Available Levels:
+- Beginner (A1-A2): Basic conversation, reading, and writing
+- Intermediate (B1-B2): Fluency in everyday situations
+- Advanced (C1-C2): Professional and academic language proficiency
+- Native Speaker: Conversation and cultural immersion
+
+Level Assessment:
+- New students must take a placement test
+- Tests are free and take approximately 1 hour
+- Results are provided within 24 hours
+
+# ===========================================
+# INSCRIPTION PROCESS
+# ===========================================
+
+How to Enroll:
+1. Take the free placement test (online or in-person)
+2. Choose your preferred schedule and level
+3. Complete the registration form
+4. Make the first payment
+5. Receive confirmation and class schedule
+
+Required Documents:
+- Copy of ID or passport
+- Recent photo (3x4 cm)
+- Payment receipt
+
+Contact for enrollment: info@academia.com / +57 XXX XXX XXXX
+
+# ===========================================
+# CERTIFICATIONS
+# ===========================================
+
+The academy offers certification upon course completion:
+- Cambridge English Certification (FCE, CAE, CPE)
+- DELE (Spanish as a Foreign Language)
+- TOEFL preparation
+- IELTS preparation
+
+Certification Requirements:
+- Minimum 80% attendance
+- Pass final assessment with minimum 70%
+- Complete all coursework and assignments
+
+Exam fees are not included in the course price.
+
+# ===========================================
+# MODALITIES
+# ===========================================
+
+Available Learning Modalities:
+
+1. In-Person:
+   - Traditional classroom setting
+   - Maximum 15 students per class
+   - Full access to academy facilities
+
+2. Online (Virtual):
+   - Live classes via Zoom/Google Meet
+   - Interactive virtual classroom
+   - Digital materials included
+   - Requires stable internet connection
+
+3. Hybrid:
+   - Mix of in-person and online classes
+   - Flexible schedule
+   - In-person sessions: 2 days/week
+   - Online sessions: 1 day/week
+
+4. Self-Paced:
+   - Pre-recorded lessons
+   - Weekly check-ins with instructor
+   - Ideal for working professionals
+
+# ===========================================
+# GENERAL POLICIES
+# ===========================================
+
+Refund Policy:
+- Full refund if cancelled 7 days before course start
+- 50% refund if cancelled 3-6 days before course start
+- No refund after course begins (except medical reasons)
+
+Absence Policy:
+- Notify instructor 24 hours in advance
+- Maximum 3 unexcused absences per month
+- More than 5 absences may require course repetition
+
+Class Cancellation:
+- Minimum 3 students required to open a class
+- Makeup classes scheduled for holidays
+- Academy closed on national holidays
