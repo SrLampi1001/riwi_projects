@@ -26,3 +26,7 @@
 	path = ai_workflows/insight-monitor
 	url = https://github.com/insight-monitor/insight-monitor-code.git
 	branch = main
+[submodule "low_code/insight-monitor-wiki"]
+	path = low_code/insight-monitor-wiki
+	url = https://github.com/insight-monitor/insight-monitor-docs.git
+	branch = main
