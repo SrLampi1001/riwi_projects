@@ -1,0 +1,53 @@
+/* ─── Design Tokens ─────────────────────────────── */
+:root {
+  --bg: #0f0e11;
+  --surface: #1a1820;
+  --surface-2: #231f2e;
+  --border: #2e2a3a;
+  --accent: #c084fc;
+  --accent-2: #38bdf8;
+  --tool-color: #fb923c;
+  --tool-bg: rgba(251, 146, 60, 0.12);
+  --text-primary: #f1eeff;
+  --text-secondary: #8b82a8;
+  --text-muted: #534d6a;
+  --user-bubble: #2d1f52;
+  --user-accent: #a855f7;
+  --bot-bubble: #1c1a27;
+  --radius: 16px;
+  --radius-sm: 8px;
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Reset ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ─── Animations ─────────────────────────────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
