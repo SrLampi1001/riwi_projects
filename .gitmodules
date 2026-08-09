@@ -30,3 +30,7 @@
 	path = low_code/insight-monitor-wiki
 	url = https://github.com/insight-monitor/insight-monitor-docs.git
 	branch = main
+[submodule "infrastructure/centinela"]
+	path = infrastructure/centinela
+	url = https://github.com/Team-Centinela/Centinela-Code.git
+	branch = main
