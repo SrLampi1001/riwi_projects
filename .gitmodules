@@ -10,3 +10,7 @@
 	path = webprojects/gitsaso-project
 	url = https://github.com/gitsaso-projects/santiago_sanchez_ruiz.git
 	branch = main
+[submodule "ai_workflows/poison-ai-app"]
+	path = ai_workflows/poison-ai-app
+	url = https://github.com/Data-Poison-AI/backend.git
+	branch = main
