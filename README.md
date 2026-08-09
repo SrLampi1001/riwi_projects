@@ -8,6 +8,14 @@ If you want to explore this files more comfortably, you can see the [webpage](ht
 > [!NOTE]
 > *Note to self:* Should think about creating a free Vercel backend for services like script files overview and terminal view (This would require a heavy amount of security)
 
+## Project folders
+
+| Folder | Projects included |
+| --- | --- |
+| [Python projects](./python/README.md) | Python fundamentals, user stories, workshops, mini-projects, and the first assessment test. |
+| [Web projects](./webprojects/README.md) | Frontend and backend exercises, web user stories, assessment tests, documentation, and portfolio projects. |
+| [AI workflows](./ai_workflows/README.md) | AI-assisted applications and automation workflows created for AI assessment tests. |
+
 ## General tech
 These projects are mainly composed of basic Python and Static websites with JavaScript + HTML + CSS
 There are backend repositories mainly with Node.js and Express.js.
