@@ -1,0 +1,31 @@
+name: Lint Workflows
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - ".github/workflows/**"
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Run actionlint (with shellcheck + pyflakes)
+        uses: docker://rhysd/actionlint:1.7.7
+        with:
+          args: -color
