@@ -6,3 +6,7 @@
 	path = webprojects/portfolio
 	url = https://github.com/SrLampi1001/PORTFOLIO.git
 	branch = main
+[submodule "webprojects/gitsaso-project"]
+	path = webprojects/gitsaso-project
+	url = https://github.com/gitsaso-projects/santiago_sanchez_ruiz.git
+	branch = main
