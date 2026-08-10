@@ -1,0 +1,38 @@
+project:
+  id: python-assessment-test-1-simulacrum
+  name: Assessment test 1 simulacrum
+  description: Python CLI with simulated async time that implements a role-based equipment lending system with CSV storage (Admin, Administrative, Instructor, Student).
+
+  type: cli
+  categories:
+    - education
+    - python
+    - assessment-test
+    - module-1
+  tags:
+    - asyncio
+    - csv
+    - roles
+    - authentication
+    - lending
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+      - csv
+      - asyncio
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/assessment_test_1_simulacrum
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/assessment_test_1_simulacrum
