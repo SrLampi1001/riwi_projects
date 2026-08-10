@@ -1,0 +1,34 @@
+project:
+  id: python-user-story-1
+  name: User Story 1
+  description: First user story from Module 1 — registers products with name, price, and stock, then calculates total units and estimated cost.
+
+  type: script
+  categories:
+    - education
+    - python
+    - user-story
+    - module-1
+  tags:
+    - fundamentals
+    - variables
+    - math
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/user_story_1
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/user_story_1

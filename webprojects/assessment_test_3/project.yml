@@ -1,0 +1,45 @@
+project:
+  id: web-assessment-test-3
+  name: Assessment test 3
+  description: CRUDZASO — role-based task management web app with admin and user views, status and priority tracking, and JSON Server as the mock REST API. User-facing settings and full user functionality are still pending; this iteration is in active development.
+
+  type: web-app
+  categories:
+    - education
+    - web
+    - assessment-test
+    - module-3
+  tags:
+    - html
+    - css
+    - javascript
+    - bootstrap
+    - json-server
+    - crud
+    - auth
+    - task-management
+
+  status: in progress
+
+  tech_stack:
+    languages:
+      - html
+      - css
+      - javascript
+    frameworks:
+      - bootstrap
+      - json-server
+    tools:
+      - node
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/assessment_test_3
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/assessment_test_3

@@ -1,0 +1,49 @@
+project:
+  id: webprojects
+  name: Web projects
+  description: Frontend, backend, and full-stack web applications from Riwi Modules 2 and 3, including HTML/CSS exercises, Node.js + Express APIs, and documentation frameworks.
+
+  type: collection
+  categories:
+    - education
+    - web
+    - fullstack
+  tags:
+    - frontend
+    - backend
+    - static-site
+    - api
+    - module-2
+    - module-3
+
+  tech_stack:
+    languages:
+      - html
+      - css
+      - javascript
+      - sql
+    frameworks:
+      - express
+      - bootstrap
+      - docusaurus
+    databases:
+      - mysql
+      - mongodb
+    tools:
+      - json-server
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects
+
+  presentation:
+    featured: true
+    order: 2

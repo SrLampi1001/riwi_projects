@@ -30,20 +30,6 @@ This mini-project is composed of 10 small python scripts.
 * **Description:** Manage multiple bank accounts.
 * **Requirements:** Create a new account (name and initial balance), deposit or withdraw money from a selected account, check the balance, and view all created accounts.
 
-<<<<<<< HEAD:READ.md
-Instead of cloning every project in main, clone the specific branch dedicated to the project, that way you won't end with more projects than you care about. 
-
-### Tags
-There are tags in each project that will tell you if projec state.
-
-| Tag | Meaning |
-| --- | ------- |
-| Complete | The project is complete as per the requirements and doesn't need any improvement | 
-| Incomplete | The project doesn't fit the full requirements of the assignment and needs improvement | 
-| Unsatisfactory | The project fits the full requirements of the assigment but can be improved | 
-| In Progress | The project has versions, and can be actively worked on | 
->>>>>>> consolidation-branch:READ.md
-=======
 ### 7. Movie Theater Reservation System
 * **Description:** Book seats for a movie.
 * **Requirements:** Display available seats, reserve a seat (change status to "occupied"), cancel a reservation, and view the updated seating map.

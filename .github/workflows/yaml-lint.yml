@@ -1,0 +1,55 @@
+name: project.yml lint
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "**/project.yml"
+      - "scripts/validate-project-yml.js"
+      - ".github/workflows/yaml-lint.yml"
+      - "package.json"
+      - "package-lock.json"
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "**/project.yml"
+      - "scripts/validate-project-yml.js"
+      - ".github/workflows/yaml-lint.yml"
+      - "package.json"
+      - "package-lock.json"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate project.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Validate every project.yml
+        run: |
+          set -o pipefail
+          npm run lint:yml 2>&1 | tee yml-lint-report.txt
+
+      - name: Upload lint report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yml-lint-report
+          path: yml-lint-report.txt
+          if-no-files-found: ignore

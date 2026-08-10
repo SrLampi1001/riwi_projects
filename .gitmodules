@@ -6,3 +6,31 @@
 	path = webprojects/portfolio
 	url = https://github.com/SrLampi1001/PORTFOLIO.git
 	branch = main
+[submodule "webprojects/gitsaso-project"]
+	path = webprojects/gitsaso-project
+	url = https://github.com/gitsaso-projects/santiago_sanchez_ruiz.git
+	branch = main
+[submodule "ai_workflows/poison-ai-app"]
+	path = ai_workflows/poison-ai-app
+	url = https://github.com/Data-Poison-AI/backend.git
+	branch = main
+[submodule "ai_workflows/scrumhub"]
+	path = ai_workflows/scrumhub
+	url = https://github.com/gitcelula02/ScrumHub.git
+	branch = main
+[submodule "webprojects/scrumhub-mock-back"]
+	path = webprojects/scrumhub-mock-back
+	url = https://github.com/gitcelula02/mock-back.git
+	branch = main
+[submodule "ai_workflows/insight-monitor"]
+	path = ai_workflows/insight-monitor
+	url = https://github.com/insight-monitor/insight-monitor-code.git
+	branch = main
+[submodule "low_code/insight-monitor-wiki"]
+	path = low_code/insight-monitor-wiki
+	url = https://github.com/insight-monitor/insight-monitor-docs.git
+	branch = main
+[submodule "infrastructure/centinela"]
+	path = infrastructure/centinela
+	url = https://github.com/Team-Centinela/Centinela-Code.git
+	branch = main

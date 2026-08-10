@@ -1,0 +1,40 @@
+project:
+  id: ai-assessment-test-simulacrum
+  name: AI assessment test simulacrum
+  description: Practice simulacrum for the AI module assessment test — an n8n workflow that automates multi-channel veterinary triage, urgency escalation, RAG-based responses, and metric logging. The project is marked incomplete in its README.
+
+  type: automation
+  categories:
+    - education
+    - ai
+    - assessment-test
+    - module-4
+  tags:
+    - n8n
+    - rag
+    - vector-database
+    - telegram
+    - email
+    - triage
+
+  status: incomplete
+
+  tech_stack:
+    tools:
+      - n8n
+      - docker
+      - telegram-bot
+    ai:
+      - llm
+      - rag
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/ai_workflows/ai_assessment_test_simulacrum
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: ai_workflows/ai_assessment_test_simulacrum

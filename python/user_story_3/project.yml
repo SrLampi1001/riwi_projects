@@ -1,0 +1,37 @@
+project:
+  id: python-user-story-3
+  name: User Story 3
+  description: Third user story from Module 1 — modular CSV-backed inventory with CRUD operations, statistics, validation, and error management.
+
+  type: script
+  categories:
+    - education
+    - python
+    - user-story
+    - module-1
+  tags:
+    - modules
+    - csv
+    - persistence
+    - crud
+    - statistics
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+      - csv
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/user_story_3
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/user_story_3

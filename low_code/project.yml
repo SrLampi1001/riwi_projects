@@ -1,0 +1,36 @@
+project:
+  id: low-code
+  name: Low code
+  description: "Low-code and no-code repositories: Obsidian vaults and configuration-only projects that pair with code repositories to provide narrative or non-technical context."
+
+  type: collection
+  categories:
+    - education
+    - low-code
+    - documentation
+  tags:
+    - obsidian
+    - vault
+    - wiki
+    - narrative
+
+  tech_stack:
+    tools:
+      - obsidian
+      - markdown
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/low_code
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: low_code
+
+  presentation:
+    featured: false
+    order: 4
