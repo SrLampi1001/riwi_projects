@@ -1,0 +1,42 @@
+project:
+  id: web-kfc
+  name: KFC frontend
+  description: Static web project simulating a KFC restaurant menu with theme switching (light, dark, rainbow), Spanish/English language toggling, simple login, session handling, and Bootstrap 5 styling.
+
+  type: static-site
+  categories:
+    - education
+    - web
+    - frontend
+    - module-3
+  tags:
+    - html
+    - css
+    - javascript
+    - bootstrap
+    - i18n
+    - localstorage
+    - sessionstorage
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - html
+      - css
+      - javascript
+    frameworks:
+      - bootstrap
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/web/kfc
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/kfc
