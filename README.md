@@ -13,6 +13,17 @@ If you want to explore this files more comfortably, you can see the [webpage](ht
 | [Python projects](./python/README.md) | Python fundamentals, user stories, workshops, mini-projects, and the first assessment test. |
 | [Web projects](./webprojects/README.md) | Frontend and backend exercises, web user stories, assessment tests, documentation, and portfolio projects. |
 | [AI workflows](./ai_workflows/README.md) | AI-assisted applications and automation workflows created for AI assessment tests. |
+| [Infrastructure](./infrastructure/README.md) | Full-stack applications where the primary focus is the cloud infrastructure they are deployed on (Azure, AWS, Terraform IaC, etc.). Projects emphasize infrastructure-as-code and cloud platform configuration over application logic. |
+| [Low Code](./low_code/README.md) | Projects with little to no traditional code. Includes Markdown-only repositories (Obsidian vaults, wikis, documentation) and low-code/no-code platform configurations (n8n, Power Automate, etc.). |
+
+## Repository support folders
+
+These folders contain repository-wide configuration and documentation that don't belong to any specific project category.
+
+| Folder | Purpose |
+| --- | --- |
+| [docs/](./docs/README.md) | Persistent repository-wide documentation: metadata contracts (`project.yml` schema), cross-cutting guides, and aggregated indexes. Does not contain per-project docs (those live inside each project's folder). |
+| [scripts/](./scripts/) | Repository-wide automation scripts. Currently includes `validate-project-yml.js` — a Node.js script that walks the repo, parses every `project.yml`, and validates it against the contract in `docs/project-yml-contract.md`. Runs locally via `npm run lint:yml` and in CI (`.github/workflows/yaml-lint.yml`). |
 
 ## General tech
 
