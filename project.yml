@@ -1,0 +1,36 @@
+project:
+  id: python-workshop-1
+  name: Python Workshop 1
+  description: Eighteen short Python exercises covering conditionals, loops, strings, and functions, executed consecutively in a single script.
+
+  type: script
+  categories:
+    - education
+    - python
+    - workshop
+    - module-1
+  tags:
+    - fundamentals
+    - conditionals
+    - loops
+    - functions
+    - console
+
+  status: completed
+
+  tech_stack:
+    languages:
+      - python
+    tools:
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects
+    branch: project/python/workshop_1
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: python/workshop_1
