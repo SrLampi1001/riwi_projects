@@ -16,21 +16,37 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      # `token: RIWI_PROJECTS_TOKEN` routes the subsequent `git push` (and the
+      # `git subtree pull` that contains it) through the fine-grained PAT instead
+      # of the implicit GITHUB_TOKEN. Without this, GitHub blocks pushes that
+      # modify files under .github/workflows/ — which this workflow does on every
+      # run when the project branch has a different workflow file content than
+      # develop.
+      # `persist-credentials: false` ensures actions/checkout doesn't write a
+      # credential helper that would override the per-command remote URL set
+      # below.
       - name: Checkout develop
         uses: actions/checkout@v7
         with:
           ref: develop
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RIWI_PROJECTS_TOKEN }}
+          persist-credentials: false
       - name: Configure git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Pull project/ai_workflows/ai_assessment_test_2 into develop
+        env:
+          TOKEN: ${{ secrets.RIWI_PROJECTS_TOKEN }}
         run: |
           set -euo pipefail
           PREFIX="ai_workflows/ai_assessment_test_2"
           BRANCH="project/ai_workflows/ai_assessment_test_2"
+
+          # Belt-and-suspenders PAT-auth override (see checkout-step comment).
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
           git fetch origin develop "$BRANCH"
 
           # develop's current synthetic SHA for the prefix (= what `git subtree
