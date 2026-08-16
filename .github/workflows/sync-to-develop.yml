@@ -1,0 +1,55 @@
+name: Sync to Develop
+# Lives at <prefix>/.github/workflows/sync-to-develop.yml in develop, so after
+# `git subtree split --prefix=<prefix>` it appears at .github/workflows/ at the
+# root of the project branch and triggers on push to that branch.
+on:
+  push:
+    branches:
+      - project/web/form_only_css_html
+  workflow_dispatch: {}
+concurrency:
+  group: subtree-sync
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v7
+        with:
+          ref: develop
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Pull project/web/form_only_css_html into develop
+        run: |
+          set -euo pipefail
+          PREFIX="webprojects/form_only_css_html"
+          BRANCH="project/web/form_only_css_html"
+          git fetch origin develop "$BRANCH"
+          # Trivial case: nothing to pull (publish-subtrees usually already
+          # propagated develop into the branch moments before this fires).
+          if git merge-base --is-ancestor "origin/$BRANCH" origin/develop; then
+            echo "Already in sync; nothing to do."
+            exit 0
+          fi
+          # Divergence: develop moved ahead of the branch in a way that
+          # the branch did not include (history corruption, force-push, etc.).
+          if ! git merge-base --is-ancestor origin/develop "origin/$BRANCH"; then
+            echo "::error::$BRANCH and develop have diverged at prefix $PREFIX."
+            echo "::error::Manual intervention required."
+            exit 1
+          fi
+          git checkout -B develop origin/develop
+          git subtree pull --prefix="$PREFIX" origin "$BRANCH"
+          if ! git diff --quiet origin/develop HEAD; then
+            git push origin develop
+            echo "Pulled $BRANCH into develop."
+          else
+            echo "Already up to date; nothing to push."
+          fi
