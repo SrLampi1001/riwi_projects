@@ -49,13 +49,18 @@ jobs:
 
           git fetch origin develop "$BRANCH"
 
-          # develop's current synthetic SHA for the prefix (= what `git subtree
-          # split --prefix=<prefix>` produces from `develop`). The classification
-          # below is reported but does not gate the fallback: it's informational,
-          # because git-subtree's own internal check works at the full-history
-          # level, and the line between "branch ahead" and "orphaned" at the
-          # synthetic level doesn't translate cleanly into git-subtree's
-          # decision.
+          # We don't gate behavior on the synthetic SHA's classification vs
+          # the project-branch tip. Synthetic SHAs produced by
+          # `git subtree split --prefix=<prefix>` are commit objects that
+          # are NOT necessarily reachable from `develop`'s parent chain, so
+          # any ancestor check against them mis-classifies the second-and-
+          # later pulls on a previously-bootstrapped branch as "diverged".
+          # Instead, just attempt `git subtree pull`; if it succeeds, the
+          # pull is the answer. If it errors with `fatal: refusing to merge
+          # unrelated histories`, fall back to the unrelated-history merge
+          # bootstrap. If it errors with anything else (real conflict, network,
+          # etc.), set -e surfaces the underlying error.
+
           tmp_branch="subtree_split_$$"
           git subtree split --prefix="$PREFIX" -b "$tmp_branch"
           expected_sha=$(git rev-parse "$tmp_branch")
@@ -68,43 +73,10 @@ jobs:
             exit 0
           fi
 
-          classification="unknown"
-          if git merge-base --is-ancestor "$expected_sha" "$actual_sha"; then
-            classification="branch ahead (fast-forward expected at synthetic level)"
-          elif git merge-base --is-ancestor "$actual_sha" "$expected_sha"; then
-            classification="develop ahead (publish-subtrees handles this direction)"
-            echo "$BRANCH ($actual_sha) is behind develop's synthetic SHA ($expected_sha)."
-            echo "publish-subtrees.yml owns the develop -> project direction. Nothing to do."
-            exit 0
-          elif [[ -n "$(git merge-base "$actual_sha" "$expected_sha")" ]]; then
-            classification="diverged (real divergence; manual recovery)"
-            echo "::error::$BRANCH and develop have diverged at prefix $PREFIX."
-            echo "::error::No fast-forward is possible: $actual_sha and $expected_sha share an ancestor but neither is reachable from the other."
-            echo "::error::This usually means:"
-            echo "::error::  - $BRANCH was restored from GitHub's recently-deleted-branches UI cache."
-            echo "::error::  - $BRANCH was force-pushed manually with non-subtree history."
-            echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run this workflow."
-            exit 1
-          else
-            classification="orphaned (no common ancestor; first-call one-time merge)"
-          fi
-          echo "synthetic-level relationship: $classification."
-
           git checkout -B develop origin/develop
 
-          # Try `git subtree pull` first; if it errors with the unrelated-history
-          # guard (which can fire even in the synthetic-level "branch ahead" case
-          # if develop's synthetic SHA isn't reachable from develop's current tip
-          # at the parent-chain level), fall back to a plain `git pull` with
-          # `--allow-unrelated-histories --strategy subtree`. That fallback
-          # produces a one-time merge commit on develop that links it to the
-          # project branch's history; subsequent pulls are normal fast-forwards.
-          #
-          # If `git subtree pull` fails for any OTHER reason (network, missing
-          # ref, real conflict), the fallback will also fail and `set -e` will
-          # surface the underlying error.
           if ! git subtree pull --prefix="$PREFIX" origin "$BRANCH"; then
-            echo "git subtree pull refused; retrying with --allow-unrelated-histories --no-rebase (one-time bootstrap)."
+            echo "git subtree pull refused; retrying with --allow-unrelated-histories --no-rebase (one-time unrelated-history bootstrap)."
             git pull --allow-unrelated-histories --no-rebase --strategy subtree origin "$BRANCH"
           fi
 
