@@ -18,7 +18,7 @@ This mini-project is composed of 10 small python scripts.
 * **Description:** Perform basic mathematical operations with a history log.
 * **Requirements:** Add, subtract, multiply, and divide; show the last operation's result; display the full history; and clear the history.
 
-### 4. Mini E-Commerce Store
+### 4. Mini E-Commerce Store *(On going)*
 * **Description:** Simulate a small online store where users can purchase items.
 * **Requirements:** Display a product catalog with prices, add products to a cart, view the total cost, and finalize the purchase.
 
