@@ -5,7 +5,8 @@
   "scripts": {
     "lint:md": "markdownlint-cli2 README.md CONTRIBUTING.md python/README.md webprojects/README.md ai_workflows/README.md docs/README.md docs/project-yml-contract.md",
     "check:links": "remark --use remark-gfm --use remark-validate-links --frail README.md CONTRIBUTING.md python/README.md webprojects/README.md ai_workflows/README.md docs/README.md docs/project-yml-contract.md",
-    "lint:yml": "node scripts/validate-project-yml.js"
+    "lint:yml": "node scripts/validate-project-yml.js",
+    "generate:sync-workflows": "node scripts/generate-sync-to-develop-workflows.js"
   },
   "devDependencies": {
     "js-yaml": "5.2.3",
