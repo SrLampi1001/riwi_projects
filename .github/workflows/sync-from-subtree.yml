@@ -1,0 +1,82 @@
+name: Sync Subtree Branch into Develop
+
+on:
+  push:
+    branches:
+      - 'project/**'
+
+concurrency:
+  group: subtree-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: develop
+
+      - name: Configure Git credentials
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Pull subtree changes into develop
+        env:
+          SUBTREE_BRANCH: ${{ github.ref_name }}
+        run: |
+          # SUBTREE_BRANCH comes from GitHub Actions' env: block; the : assignment
+          # satisfies shellcheck without overriding the real value at runtime.
+          : "${SUBTREE_BRANCH:=}"
+          set -euo pipefail
+          source scripts/subtree-map.sh
+
+          PREFIX=$(prefix_for_branch "$SUBTREE_BRANCH") || {
+            echo "No prefix mapping for branch '$SUBTREE_BRANCH'; nothing to do."
+            exit 0
+          }
+
+          echo "Syncing '$SUBTREE_BRANCH' into develop at prefix '$PREFIX'"
+
+          git fetch origin develop "$SUBTREE_BRANCH"
+          git checkout -B develop origin/develop
+
+          # git subtree pull exits non-zero on conflict; abort without pushing so
+          # develop stays at its last known-good state. The operator resolves
+          # locally and pushes the result.
+          if ! git subtree pull --prefix="$PREFIX" origin "$SUBTREE_BRANCH" --squash; then
+            echo "::error::git subtree pull failed for prefix '$PREFIX' from branch '$SUBTREE_BRANCH'."
+            echo "::error::Likely cause: merge conflict between develop's current state and the project branch."
+            echo "::error::Resolve locally:"
+            echo "::error::  git fetch origin develop $SUBTREE_BRANCH"
+            echo "::error::  git checkout develop"
+            echo "::error::  git subtree pull --prefix=$PREFIX origin $SUBTREE_BRANCH --squash"
+            echo "::error::  # resolve any conflicts, then:"
+            echo "::error::  git push origin develop"
+            exit 1
+          fi
+
+          # If subtree pull produced no diff, nothing to push.
+          if git diff --quiet origin/develop HEAD; then
+            echo "No changes after subtree pull; nothing to push."
+            exit 0
+          fi
+
+          # Defensive: ensure origin/develop hasn't moved past our local base
+          # while the workflow was running. The concurrency group should
+          # prevent this; this is belt-and-suspenders.
+          git fetch origin develop
+          if ! git merge-base --is-ancestor origin/develop HEAD; then
+            echo "::error::origin/develop has diverged from the local state this workflow produced."
+            echo "::error::A push to develop happened during this run. Re-run the workflow to retry."
+            exit 1
+          fi
+
+          git push origin develop
+          echo "Pushed develop."
