@@ -83,14 +83,31 @@ jobs:
             echo "Publishing $prefix to $branch"
 
             tmp_branch="subtree_split_$$"
-            git subtree split --prefix="$prefix" -b "$tmp_branch"
+            # `--rejoin` merges the synthetic history back into develop via
+            # `git merge --no-ff -Xsubtree=<prefix>`. The join commit makes
+            # develop's synthetic SHA reachable from develop's mainline parent
+            # chain, which is the precondition for `git pull --ff-only` to
+            # succeed on `sync-to-develop.yml` later. Without it, develop's
+            # synthetic SHA is unrelated to develop's mainline after a few
+            # merges, and git-subtree's pull is forever producing merge
+            # commits on develop on every project-branch push.
+            #
+            # The join commit's tree is the same as develop's pre-rejoin tree
+            # (no file content changes; just a structured merge with the
+            # synthetic branch as the second parent). That makes the path
+            # filter on `on: push.paths` not match the rejoin commit on
+            # subsequent develop pushes, so this doesn't infinite-loop the
+            # workflow: a run-once rejoin keys the next publish's boundary
+            # so further splits only consider new commits.
+            git subtree split --prefix="$prefix" --rejoin -b "$tmp_branch"
             expected_sha=$(git rev-parse "$tmp_branch")
+            git branch -D "$tmp_branch" || true
+
             actual_sha=$(git rev-parse "refs/remotes/origin/$branch" 2>/dev/null || echo "")
 
             if [[ -n "$actual_sha" ]]; then
               if [[ "$actual_sha" == "$expected_sha" ]]; then
                 echo "$branch already at develop's synthetic SHA ($expected_sha); skipping."
-                git branch -D "$tmp_branch" || true
                 continue
               fi
               if ! git merge-base --is-ancestor "$actual_sha" "$expected_sha"; then
@@ -100,7 +117,6 @@ jobs:
                 echo "::error::  - The branch was restored from GitHub's recently-deleted-branches UI cache."
                 echo "::error::  - The branch was force-pushed manually with non-subtree history."
                 echo "::error::To recover: delete $branch on origin (Settings > Branches, or 'git push origin :$branch') and re-run this workflow."
-                git branch -D "$tmp_branch" || true
                 exit 1
               fi
               echo "develop ahead of $branch ($actual_sha -> $expected_sha); pushing."
@@ -109,5 +125,4 @@ jobs:
             fi
 
             git subtree push --prefix="$prefix" origin "$branch"
-            git branch -D "$tmp_branch"
           done
