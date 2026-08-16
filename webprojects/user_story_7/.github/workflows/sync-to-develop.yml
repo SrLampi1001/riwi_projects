@@ -50,10 +50,12 @@ jobs:
           git fetch origin develop "$BRANCH"
 
           # develop's current synthetic SHA for the prefix (= what `git subtree
-          # split --prefix=<prefix>` produces from `develop`). The pull's safety
-          # is decided relative to this SHA, not relative to origin/develop —
-          # develop can have advanced on commits outside the prefix while the
-          # branch was quiet.
+          # split --prefix=<prefix>` produces from `develop`). The classification
+          # below is reported but does not gate the fallback: it's informational,
+          # because git-subtree's own internal check works at the full-history
+          # level, and the line between "branch ahead" and "orphaned" at the
+          # synthetic level doesn't translate cleanly into git-subtree's
+          # decision.
           tmp_branch="subtree_split_$$"
           git subtree split --prefix="$PREFIX" -b "$tmp_branch"
           expected_sha=$(git rev-parse "$tmp_branch")
@@ -66,29 +68,16 @@ jobs:
             exit 0
           fi
 
-          # Four-way classification. The pull is unsafe on the diverged case
-          # (real divergence — operator intervention required). For the three
-          # other cases we attempt the pull, but use distinct mechanisms:
-          #
-          #   * branch ahead (typical):       `git subtree pull` (fast-forward)
-          #   * develop ahead (shouldn't happen given publish-subtrees.yml owns
-          #     that direction, but possible): no-op
-          #   * orphaned (no common ancestor at full-history level): the FIRST
-          #     pull on such a branch is a one-time unrelated-history merge via
-          #     plain `git pull` with `--allow-unrelated-histories`. After that,
-          #     develop and the branch share history and subsequent pulls are
-          #     normal fast-forwards. `git subtree pull` does not accept that
-          #     flag (it errors with `unknown option`) so we fall back to plain
-          #     `git pull --strategy subtree` for the orphaned case only.
-          merge_msg=""
-
+          classification="unknown"
           if git merge-base --is-ancestor "$expected_sha" "$actual_sha"; then
-            echo "$BRANCH is ahead of develop's synthetic SHA ($expected_sha -> $actual_sha); pulling (fast-forward expected)."
+            classification="branch ahead (fast-forward expected at synthetic level)"
           elif git merge-base --is-ancestor "$actual_sha" "$expected_sha"; then
-            echo "$BRANCH ($actual_sha) is behind develop's synthetic SHA ($expected_sha);"
+            classification="develop ahead (publish-subtrees handles this direction)"
+            echo "$BRANCH ($actual_sha) is behind develop's synthetic SHA ($expected_sha)."
             echo "publish-subtrees.yml owns the develop -> project direction. Nothing to do."
             exit 0
           elif [[ -n "$(git merge-base "$actual_sha" "$expected_sha")" ]]; then
+            classification="diverged (real divergence; manual recovery)"
             echo "::error::$BRANCH and develop have diverged at prefix $PREFIX."
             echo "::error::No fast-forward is possible: $actual_sha and $expected_sha share an ancestor but neither is reachable from the other."
             echo "::error::This usually means:"
@@ -97,33 +86,31 @@ jobs:
             echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run this workflow."
             exit 1
           else
-            echo "$BRANCH has no common ancestor with develop at the prefix level (orphaned at the full-history level)."
-            echo "This is the one-time-per-branch unrelated-history merge bootstrap;"
-            echo "after this run, develop and $BRANCH will share history and subsequent pulls are normal fast-forwards."
-            merge_msg=" (one-time unrelated-history merge)"
+            classification="orphaned (no common ancestor; first-call one-time merge)"
           fi
+          echo "synthetic-level relationship: $classification."
 
           git checkout -B develop origin/develop
 
-          # Try `git subtree pull` first. It works for the branch-ahead case (and
-          # would succeed for related-history cases in general). For the orphaned
-          # case it errors with `fatal: refusing to merge unrelated histories` —
-          # that's expected; fall back to a plain `git pull` with
-          # `--allow-unrelated-histories --strategy subtree`, which produces the
-          # one-time join commit.
+          # Try `git subtree pull` first; if it errors with the unrelated-history
+          # guard (which can fire even in the synthetic-level "branch ahead" case
+          # if develop's synthetic SHA isn't reachable from develop's current tip
+          # at the parent-chain level), fall back to a plain `git pull` with
+          # `--allow-unrelated-histories --strategy subtree`. That fallback
+          # produces a one-time merge commit on develop that links it to the
+          # project branch's history; subsequent pulls are normal fast-forwards.
+          #
+          # If `git subtree pull` fails for any OTHER reason (network, missing
+          # ref, real conflict), the fallback will also fail and `set -e` will
+          # surface the underlying error.
           if ! git subtree pull --prefix="$PREFIX" origin "$BRANCH"; then
-            if [[ -n "$merge_msg" ]]; then
-              echo "git subtree pull refused (expected for orphaned branch on first pull); retrying with --allow-unrelated-histories."
-              git pull --allow-unrelated-histories --strategy subtree origin "$BRANCH"
-            else
-              echo "::error::git subtree pull failed for prefix $PREFIX from branch $BRANCH (unrelated-history error was unexpected — no orphan detected)."
-              exit 1
-            fi
+            echo "git subtree pull refused; retrying with --allow-unrelated-histories (one-time bootstrap)."
+            git pull --allow-unrelated-histories --strategy subtree origin "$BRANCH"
           fi
 
           if ! git diff --quiet origin/develop HEAD; then
             git push origin develop
-            echo "Pulled $BRANCH into develop$merge_msg."
+            echo "Pulled $BRANCH into develop."
           else
             echo "Already up to date; nothing to push."
           fi
