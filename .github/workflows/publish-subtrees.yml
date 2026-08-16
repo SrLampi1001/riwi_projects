@@ -9,6 +9,10 @@ on:
       - "webprojects/*/**"
       - "ai_workflows/*/**"
 
+concurrency:
+  group: subtree-sync
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -37,34 +41,7 @@ jobs:
           : "${BEFORE_SHA:=}"
           : "${CURRENT_SHA:=}"
           set -euo pipefail
-
-          declare -A branches=(
-            ["python/user_story_1"]="project/python/user_story_1"
-            ["python/user_story_2"]="project/python/user_story_2"
-            ["python/user_story_3"]="project/python/user_story_3"
-            ["python/workshop_1"]="project/python/workshop_1"
-            ["python/workshop_2"]="project/python/workshop_2"
-            ["python/mini-projects"]="project/python/mini-projects"
-            ["python/grades_management_workshop"]="project/python/grades_management_workshop"
-            ["python/assessment_test_1_simulacrum"]="project/python/assessment_test_1_simulacrum"
-            ["python/assessment_test_1"]="project/python/assessment_test_1"
-            ["webprojects/form_only_css_html"]="project/web/form_only_css_html"
-            ["webprojects/assessment_test_2"]="project/web/assessment_test_2"
-            ["webprojects/user_story_4"]="project/web/user_story_4"
-            ["webprojects/simple_storage"]="project/web/simple_storage"
-            ["webprojects/user_story_5"]="project/web/user_story_5"
-            ["webprojects/kfc"]="project/web/kfc"
-            ["webprojects/assessment_test_3_simulacrum"]="project/web/assessment_test_3_simulacrum"
-            ["webprojects/assessment_test_3"]="project/web/assessment_test_3"
-            ["webprojects/user_story_6"]="project/web/user_story_6"
-            ["webprojects/user_story_7"]="project/web/user_story_7"
-            ["webprojects/express_mysql_practice"]="project/web/express_mysql_practice"
-            ["webprojects/assessment_test_4"]="project/web/assessment_test_4"
-            ["webprojects/docusaurus_documentation"]="project/web/docusaurus_documentation"
-            ["ai_workflows/ai_assessment_test_simulacrum"]="project/ai_workflows/ai_assessment_test_simulacrum"
-            ["ai_workflows/ai_assessment_test_1"]="project/ai_workflows/ai_assessment_test_1"
-            ["ai_workflows/ai_assessment_test_2"]="project/ai_workflows/ai_assessment_test_2"
-          )
+          source scripts/subtree-map.sh
 
           if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
             mapfile -t changed_files < <(git diff --name-only --diff-filter=ACMRD "$BEFORE_SHA" "$CURRENT_SHA")
@@ -73,7 +50,7 @@ jobs:
           fi
 
           changed_prefixes=()
-          for prefix in "${!branches[@]}"; do
+          for prefix in "${!BRANCHES_MAP[@]}"; do
             for file in "${changed_files[@]}"; do
               if [[ "$file" == "$prefix/"* ]]; then
                 changed_prefixes+=("$prefix")
@@ -88,7 +65,7 @@ jobs:
           fi
 
           for prefix in "${changed_prefixes[@]}"; do
-            branch="${branches[$prefix]}"
+            branch="${BRANCHES_MAP[$prefix]}"
             echo "Publishing $prefix to $branch"
 
             tmp_branch="subtree_split_$$"
@@ -101,6 +78,7 @@ jobs:
               echo "::error::The branch has diverged from develop. This usually means:"
               echo "::error::  - The branch was restored from GitHub's recently-deleted-branches UI cache."
               echo "::error::  - The branch was force-pushed manually with a non-subtree history."
+              echo "::error::  - A reverse-sync workflow run is in flight (should not happen; the concurrency group should prevent this)."
               echo "::error::To recover: delete $branch on origin (Settings > Branches, or 'git push origin :$branch') and re-run this workflow."
               git branch -D "$tmp_branch" || true
               exit 1
