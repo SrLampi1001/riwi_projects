@@ -73,15 +73,25 @@ jobs:
             expected_sha=$(git rev-parse "$tmp_branch")
             actual_sha=$(git rev-parse "refs/remotes/origin/$branch" 2>/dev/null || echo "")
 
-            if [[ -n "$actual_sha" && "$actual_sha" != "$expected_sha" ]]; then
-              echo "::error::Project branch $branch is at $actual_sha but develop's synthetic SHA for $prefix is $expected_sha."
-              echo "::error::The branch has diverged from develop. This usually means:"
-              echo "::error::  - The branch was restored from GitHub's recently-deleted-branches UI cache."
-              echo "::error::  - The branch was force-pushed manually with a non-subtree history."
-              echo "::error::  - A reverse-sync workflow run is in flight (should not happen; the concurrency group should prevent this)."
-              echo "::error::To recover: delete $branch on origin (Settings > Branches, or 'git push origin :$branch') and re-run this workflow."
-              git branch -D "$tmp_branch" || true
-              exit 1
+            if [[ -n "$actual_sha" ]]; then
+              if [[ "$actual_sha" == "$expected_sha" ]]; then
+                echo "$branch already at develop's synthetic SHA ($expected_sha); skipping."
+                git branch -D "$tmp_branch" || true
+                continue
+              fi
+              if ! git merge-base --is-ancestor "$actual_sha" "$expected_sha"; then
+                echo "::error::Project branch $branch is at $actual_sha but develop's synthetic SHA for $prefix is $expected_sha."
+                echo "::error::No fast-forward is possible: $actual_sha is not reachable from develop's history."
+                echo "::error::This usually means:"
+                echo "::error::  - The branch was restored from GitHub's recently-deleted-branches UI cache."
+                echo "::error::  - The branch was force-pushed manually with non-subtree history."
+                echo "::error::To recover: delete $branch on origin (Settings > Branches, or 'git push origin :$branch') and re-run this workflow."
+                git branch -D "$tmp_branch" || true
+                exit 1
+              fi
+              echo "develop ahead of $branch ($actual_sha -> $expected_sha); pushing."
+            else
+              echo "$branch does not exist on origin; first push will create it."
             fi
 
             git subtree push --prefix="$prefix" origin "$branch"
