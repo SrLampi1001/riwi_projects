@@ -99,6 +99,13 @@ jobs:
             # subsequent develop pushes, so this doesn't infinite-loop the
             # workflow: a run-once rejoin keys the next publish's boundary
             # so further splits only consider new commits.
+            #
+            # We push develop back after the synthetic lands so the join
+            # commit (and the synthetic as its second parent) become part of
+            # develop's origin/mainline. Without that push, --rejoin only
+            # affects the runner's local develop and the synthetic stays
+            # disconnected from origin/develop, breaking --ff-only on the
+            # next pull. The push uses the same PAT as the synthetic push.
             git subtree split --prefix="$prefix" --rejoin -b "$tmp_branch"
             expected_sha=$(git rev-parse "$tmp_branch")
             git branch -D "$tmp_branch" || true
@@ -126,3 +133,9 @@ jobs:
 
             git subtree push --prefix="$prefix" origin "$branch"
           done
+
+          # Push develop back so the join merge (and its second parent, the
+          # synthetic) become part of origin/develop's mainline. Subsequent
+          # `sync-to-develop.yml` runs rely on this for `git pull --ff-only`
+          # to fast-forward rather than always merging.
+          git push origin develop
