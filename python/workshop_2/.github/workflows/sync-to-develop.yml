@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # `token: RIWI_PROJECTS_TOKEN` routes the subsequent `git push` (and the
-      # `git subtree pull` that contains it) through the fine-grained PAT instead
-      # of the implicit GITHUB_TOKEN. Without this, GitHub blocks pushes that
-      # modify files under .github/workflows/ — which this workflow does on every
-      # run when the project branch has a different workflow file content than
+      # `git pull` that contains it) through the fine-grained PAT instead of the
+      # implicit GITHUB_TOKEN. Without this, GitHub blocks pushes that modify
+      # files under .github/workflows/ — which this workflow does on every run
+      # when the project branch has a different workflow file content than
       # develop.
       # `persist-credentials: false` ensures actions/checkout doesn't write a
       # credential helper that would override the per-command remote URL set
@@ -49,17 +49,11 @@ jobs:
 
           git fetch origin develop "$BRANCH"
 
-          # We don't gate behavior on the synthetic SHA's classification vs
-          # the project-branch tip. Synthetic SHAs produced by
-          # `git subtree split --prefix=<prefix>` are commit objects that
-          # are NOT necessarily reachable from `develop`'s parent chain, so
-          # any ancestor check against them mis-classifies the second-and-
-          # later pulls on a previously-bootstrapped branch as "diverged".
-          # Instead, just attempt `git subtree pull`; if it succeeds, the
-          # pull is the answer. If it errors with `fatal: refusing to merge
-          # unrelated histories`, fall back to the unrelated-history merge
-          # bootstrap. If it errors with anything else (real conflict, network,
-          # etc.), set -e surfaces the underlying error.
+          # The synthetic SHA is computed for the early-exit check (skip when
+          # develop's synthetic is already the project branch tip), but the
+          # classification logic that used to gate behavior was dropped in
+          # PR #72 because synthetic-vs-mainline parent-chain mismatches caused
+          # false "diverged" reports on every post-bootstrap pull.
 
           tmp_branch="subtree_split_$$"
           git subtree split --prefix="$PREFIX" -b "$tmp_branch"
@@ -75,8 +69,23 @@ jobs:
 
           git checkout -B develop origin/develop
 
-          if ! git subtree pull --prefix="$PREFIX" origin "$BRANCH"; then
-            echo "git subtree pull refused; retrying with --allow-unrelated-histories --no-rebase (one-time unrelated-history bootstrap)."
+          # Pulls use raw `git pull --strategy subtree` instead of `git subtree
+          # pull`. The latter is hard-coded to `git merge --no-ff` (see
+          # git-subtree.sh source), which means every pull produces a merge
+          # commit on develop even when a fast-forward is geometrically
+          # possible. With `--rejoin` on the publish side (see
+          # publish-subtrees.yml), develop's synthetic SHA is reachable from
+          # develop's mainline parent chain, so `git pull --ff-only` is the
+          # right tool: real fast-forward pulls skip the merge commit; the
+          # one-time orphan-bootstrap case fails the FF check below and falls
+          # back to the unrelated-history merge bootstrap.
+          #
+          # `--no-rebase` is needed on the fallback: `git pull` without it
+          # prompts `fatal: Need to specify how to reconcile divergent
+          # branches.` when no shared ancestor exists, even with
+          # `--allow-unrelated-histories`.
+          if ! git pull --ff-only --strategy subtree origin "$BRANCH"; then
+            echo "git pull --ff-only failed; retrying with --allow-unrelated-histories --no-rebase (one-time unrelated-history bootstrap)."
             git pull --allow-unrelated-histories --no-rebase --strategy subtree origin "$BRANCH"
           fi
 
