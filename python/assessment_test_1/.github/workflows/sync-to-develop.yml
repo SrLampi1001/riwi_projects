@@ -104,8 +104,8 @@ jobs:
           # ref, real conflict), the fallback will also fail and `set -e` will
           # surface the underlying error.
           if ! git subtree pull --prefix="$PREFIX" origin "$BRANCH"; then
-            echo "git subtree pull refused; retrying with --allow-unrelated-histories (one-time bootstrap)."
-            git pull --allow-unrelated-histories --strategy subtree origin "$BRANCH"
+            echo "git subtree pull refused; retrying with --allow-unrelated-histories --no-rebase (one-time bootstrap)."
+            git pull --allow-unrelated-histories --no-rebase --strategy subtree origin "$BRANCH"
           fi
 
           if ! git diff --quiet origin/develop HEAD; then
