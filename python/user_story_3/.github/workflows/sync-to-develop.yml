@@ -66,10 +66,17 @@ jobs:
             exit 0
           fi
 
-          # Four-way classification. The pull is only safe when the project
-          # branch's tip extends develop's synthetic history for this prefix.
+          # Four-way classification. The pull is safe to attempt in three of the
+          # four states; the diverged case refuses with a clear error. The "no
+          # common ancestor" (orphaned) case is permitted via
+          # `--allow-unrelated-histories`: that produces a one-time merge commit
+          # on develop that links it to the project branch's history, after which
+          # subsequent pulls are normal fast-forwards.
+          pull_args=(--allow-unrelated-histories)
+          merge_mode=""
+
           if git merge-base --is-ancestor "$expected_sha" "$actual_sha"; then
-            : # branch is strictly ahead; proceed to pull below
+            echo "$BRANCH is ahead of develop's synthetic SHA ($expected_sha -> $actual_sha); pulling (fast-forward expected)."
           elif git merge-base --is-ancestor "$actual_sha" "$expected_sha"; then
             echo "$BRANCH ($actual_sha) is behind develop's synthetic SHA ($expected_sha);"
             echo "publish-subtrees.yml owns the develop -> project direction. Nothing to do."
@@ -83,19 +90,17 @@ jobs:
             echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run this workflow."
             exit 1
           else
-            echo "::error::$BRANCH and develop have no common ancestor; $BRANCH is orphaned."
-            echo "::error::This is a chronic state left behind by the historical publish-subtrees divergence bug."
-            echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run publish-subtrees.yml on develop to re-bootstrap it at develop's synthetic SHA."
-            exit 1
+            echo "$BRANCH has no common ancestor with develop at the prefix level (orphaned at the full-history level)."
+            echo "This is the one-time-per-branch `git subtree pull --allow-unrelated-histories` bootstrap;"
+            echo "after this run, develop and $BRANCH will share history and subsequent pulls are normal fast-forwards."
+            merge_mode=" (merge of unrelated histories)"
           fi
 
-          echo "$BRANCH is ahead of develop's synthetic SHA ($expected_sha -> $actual_sha); pulling."
-
           git checkout -B develop origin/develop
-          git subtree pull --prefix="$PREFIX" origin "$BRANCH"
+          git subtree pull "${pull_args[@]}" --prefix="$PREFIX" origin "$BRANCH"
           if ! git diff --quiet origin/develop HEAD; then
             git push origin develop
-            echo "Pulled $BRANCH into develop."
+            echo "Pulled $BRANCH into develop$merge_mode."
           else
             echo "Already up to date; nothing to push."
           fi
