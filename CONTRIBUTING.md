@@ -11,6 +11,8 @@ Per-project branches (`project/<area>/<name>`) are published automatically by `.
 
 Submodules (`webprojects/kepler_page`, `webprojects/portfolio`) are refreshed weekly by `.github/workflows/submodules_sync.yml`.
 
+> **Note on `project/*` branches and GitHub's deleted-branch cache.** GitHub keeps a UI cache of recently deleted branches under the *Branches* view, with a *Restore* button. If you click *Restore* on a `project/*` branch that was deleted to recover from drift, GitHub will re-create the branch at its old (pre-deletion) commit, undoing the fresh bootstrap. The publish workflow detects this case (it compares the remote SHA against develop's synthetic SHA before pushing) and fails with a recovery message instead of silently overwriting. If that happens, delete the branch again on origin and re-run the workflow.
+
 ## Branch protection
 
 Both `main` and `develop` have the same protection rules configured in the repository settings:
@@ -30,7 +32,6 @@ The repository is single-maintainer for now. The following pieces are deliberate
 - Issue and PR templates
 - The `project.yml` metadata contract (referenced by the root README's "Should know" section)
 - Per-project branch naming conventions
-- Express/MySQL subtree special-handling notes (the `--ignore-joins` push)
 - Tighter approval requirements (raise `required_approving_review_count` from `0` to `1`)
 
 The CI workflows already in place (`lint-workflows`, `docs-check`, Dependabot) should continue to gate every change regardless of who pushes.

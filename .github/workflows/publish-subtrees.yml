@@ -32,6 +32,10 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
           CURRENT_SHA: ${{ github.sha }}
         run: |
+          # BEFORE_SHA / CURRENT_SHA come from GitHub Actions' env: block; the : assignments
+          # satisfy shellcheck without overriding the real values at runtime.
+          : "${BEFORE_SHA:=}"
+          : "${CURRENT_SHA:=}"
           set -euo pipefail
 
           declare -A branches=(
@@ -87,11 +91,21 @@ jobs:
             branch="${branches[$prefix]}"
             echo "Publishing $prefix to $branch"
 
-            if [[ "$prefix" == "webprojects/express_mysql_practice" ]]; then
-              git subtree split --prefix="$prefix" --ignore-joins -b split_express_mysql
-              git push origin "split_express_mysql:$branch" --force
-              git branch -D split_express_mysql
-            else
-              git subtree push --prefix="$prefix" origin "$branch"
+            tmp_branch="subtree_split_$$"
+            git subtree split --prefix="$prefix" -b "$tmp_branch"
+            expected_sha=$(git rev-parse "$tmp_branch")
+            actual_sha=$(git rev-parse "refs/remotes/origin/$branch" 2>/dev/null || echo "")
+
+            if [[ -n "$actual_sha" && "$actual_sha" != "$expected_sha" ]]; then
+              echo "::error::Project branch $branch is at $actual_sha but develop's synthetic SHA for $prefix is $expected_sha."
+              echo "::error::The branch has diverged from develop. This usually means:"
+              echo "::error::  - The branch was restored from GitHub's recently-deleted-branches UI cache."
+              echo "::error::  - The branch was force-pushed manually with a non-subtree history."
+              echo "::error::To recover: delete $branch on origin (Settings > Branches, or 'git push origin :$branch') and re-run this workflow."
+              git branch -D "$tmp_branch" || true
+              exit 1
             fi
+
+            git subtree push --prefix="$prefix" origin "$branch"
+            git branch -D "$tmp_branch"
           done
