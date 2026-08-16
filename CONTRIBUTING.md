@@ -13,7 +13,13 @@ This file documents how work is organized in this repository. It is written prim
 `develop` and `project/<area>/<name>` branches are kept in sync by two workflows sharing a `concurrency: subtree-sync` group (so they cannot run at the same time):
 
 - **`.github/workflows/publish-subtrees.yml`** — fires on push to `develop` (when paths under `python/*/**`, `webprojects/*/**`, or `ai_workflows/*/**` change). For each affected prefix, splits `develop` and `git subtree push`-es the result to the corresponding `project/<area>/<name>` branch. Includes a divergence guard that fail-fasts if the project branch's remote SHA does not match `develop`'s synthetic SHA for that prefix.
-- **`.github/workflows/sync-from-subtree.yml`** — fires on push to any `project/**` branch. Resolves the branch name to its prefix via `scripts/subtree-map.sh`, then `git subtree pull`s the project branch into `develop` and pushes `develop` directly. Aborts (no push to `develop`) if the pull reports a merge conflict — the operator resolves locally and pushes the result.
+- **`.github/workflows/sync-from-subtree.yml`** — fires every 5 minutes via cron and on `workflow_dispatch`. Polls every tracked `project/*` branch; for each, compares the remote SHA against `develop`'s synthetic SHA for the corresponding prefix. If the project branch is strictly ahead, `git subtree pull --squash`-es it into `develop` and pushes `develop`. No-ops if they already match or if `develop` is ahead (publish-subtrees handles that direction). Fails loudly if the histories have diverged (no common ancestor) — the operator must resolve manually.
+
+#### Why polling instead of push trigger
+
+The reverse direction cannot use `on: push: branches: ['project/**']`. Project branches are synthetic `git subtree split` views: they contain only the files under the prefix, so `.github/workflows/sync-from-subtree.yml` is not present at the push SHA. GitHub Actions evaluates the workflow file at the push SHA, which means the trigger would never fire. The scheduled poll sidesteps this by checking every branch from inside the workflow.
+
+Push latency from a project branch to `develop` is therefore up to ~5 minutes. For a single-writer repo this is acceptable. If real-time becomes necessary, a repo webhook + `repository_dispatch` can be added later.
 
 The mapping between prefixes and project branches lives in `scripts/subtree-map.sh` (single source of truth, sourced by both workflows).
 
