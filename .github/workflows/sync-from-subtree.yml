@@ -60,7 +60,7 @@ jobs:
           # not just the dispatching branch.
           mapfile -t branches_to_check < <(
             git for-each-ref --format='%(refname:short)' refs/remotes/origin/ \
-              | grep '^project/' || true
+              | sed -n 's|^origin/project/|project/|p' || true
           )
 
           if [[ ${#branches_to_check[@]} -eq 0 ]]; then
