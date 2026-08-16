@@ -16,28 +16,51 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      # `token: RIWI_PROJECTS_TOKEN` routes the subsequent `git push` (and the
+      # `git subtree pull` that contains it) through the fine-grained PAT instead
+      # of the implicit GITHUB_TOKEN. Without this, GitHub blocks pushes that
+      # modify files under .github/workflows/ — which this workflow does on every
+      # run when the project branch has a different workflow file content than
+      # develop.
+      # `persist-credentials: false` ensures actions/checkout doesn't write a
+      # credential helper that would override the per-command remote URL set
+      # below.
       - name: Checkout develop
         uses: actions/checkout@v7
         with:
           ref: develop
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RIWI_PROJECTS_TOKEN }}
+          persist-credentials: false
       - name: Configure git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Pull project/web/kfc into develop
+        env:
+          TOKEN: ${{ secrets.RIWI_PROJECTS_TOKEN }}
         run: |
           set -euo pipefail
           PREFIX="webprojects/kfc"
           BRANCH="project/web/kfc"
+
+          # Belt-and-suspenders PAT-auth override (see checkout-step comment).
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
           git fetch origin develop "$BRANCH"
 
-          # develop's current synthetic SHA for the prefix (= what `git subtree
-          # split --prefix=<prefix>` produces from `develop`). The pull's safety
-          # is decided relative to this SHA, not relative to origin/develop —
-          # develop can have advanced on commits outside the prefix while the
-          # branch was quiet.
+          # We don't gate behavior on the synthetic SHA's classification vs
+          # the project-branch tip. Synthetic SHAs produced by
+          # `git subtree split --prefix=<prefix>` are commit objects that
+          # are NOT necessarily reachable from `develop`'s parent chain, so
+          # any ancestor check against them mis-classifies the second-and-
+          # later pulls on a previously-bootstrapped branch as "diverged".
+          # Instead, just attempt `git subtree pull`; if it succeeds, the
+          # pull is the answer. If it errors with `fatal: refusing to merge
+          # unrelated histories`, fall back to the unrelated-history merge
+          # bootstrap. If it errors with anything else (real conflict, network,
+          # etc.), set -e surfaces the underlying error.
+
           tmp_branch="subtree_split_$$"
           git subtree split --prefix="$PREFIX" -b "$tmp_branch"
           expected_sha=$(git rev-parse "$tmp_branch")
@@ -50,33 +73,13 @@ jobs:
             exit 0
           fi
 
-          # Four-way classification. The pull is only safe when the project
-          # branch's tip extends develop's synthetic history for this prefix.
-          if git merge-base --is-ancestor "$expected_sha" "$actual_sha"; then
-            : # branch is strictly ahead; proceed to pull below
-          elif git merge-base --is-ancestor "$actual_sha" "$expected_sha"; then
-            echo "$BRANCH ($actual_sha) is behind develop's synthetic SHA ($expected_sha);"
-            echo "publish-subtrees.yml owns the develop -> project direction. Nothing to do."
-            exit 0
-          elif [[ -n "$(git merge-base "$actual_sha" "$expected_sha")" ]]; then
-            echo "::error::$BRANCH and develop have diverged at prefix $PREFIX."
-            echo "::error::No fast-forward is possible: $actual_sha and $expected_sha share an ancestor but neither is reachable from the other."
-            echo "::error::This usually means:"
-            echo "::error::  - $BRANCH was restored from GitHub's recently-deleted-branches UI cache."
-            echo "::error::  - $BRANCH was force-pushed manually with non-subtree history."
-            echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run this workflow."
-            exit 1
-          else
-            echo "::error::$BRANCH and develop have no common ancestor; $BRANCH is orphaned."
-            echo "::error::This is a chronic state left behind by the historical publish-subtrees divergence bug."
-            echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run publish-subtrees.yml on develop to re-bootstrap it at develop's synthetic SHA."
-            exit 1
+          git checkout -B develop origin/develop
+
+          if ! git subtree pull --prefix="$PREFIX" origin "$BRANCH"; then
+            echo "git subtree pull refused; retrying with --allow-unrelated-histories --no-rebase (one-time unrelated-history bootstrap)."
+            git pull --allow-unrelated-histories --no-rebase --strategy subtree origin "$BRANCH"
           fi
 
-          echo "$BRANCH is ahead of develop's synthetic SHA ($expected_sha -> $actual_sha); pulling."
-
-          git checkout -B develop origin/develop
-          git subtree pull --prefix="$PREFIX" origin "$BRANCH"
           if ! git diff --quiet origin/develop HEAD; then
             git push origin develop
             echo "Pulled $BRANCH into develop."

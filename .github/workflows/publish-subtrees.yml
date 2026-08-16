@@ -20,12 +20,22 @@ jobs:
   sync-subtrees:
     runs-on: ubuntu-latest
     steps:
+      # `token: RIWI_PROJECTS_TOKEN` routes the subsequent `git push` (and any
+      # `git subtree push` that wraps it) through the fine-grained PAT instead
+      # of the implicit GITHUB_TOKEN. Without this, GitHub blocks pushes that
+      # modify or create files under .github/workflows/ (the per-project
+      # sync-to-develop.yml sits there after `git subtree split --prefix=<X>`).
+      # `persist-credentials: false` ensures actions/checkout doesn't write a
+      # credential helper that would override the per-command remote URL set
+      # below.
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          token: ${{ secrets.RIWI_PROJECTS_TOKEN }}
+          persist-credentials: false
 
-      - name: Configure Git credentials
+      - name: Configure git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -33,6 +43,7 @@ jobs:
       - name: Publish changed subtree branches
         shell: bash
         env:
+          TOKEN: ${{ secrets.RIWI_PROJECTS_TOKEN }}
           BEFORE_SHA: ${{ github.event.before }}
           CURRENT_SHA: ${{ github.sha }}
         run: |
@@ -42,6 +53,9 @@ jobs:
           : "${CURRENT_SHA:=}"
           set -euo pipefail
           source scripts/subtree-map.sh
+
+          # Belt-and-suspenders PAT-auth override (see checkout-step comment).
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
           if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
             mapfile -t changed_files < <(git diff --name-only --diff-filter=ACMRD "$BEFORE_SHA" "$CURRENT_SHA")
