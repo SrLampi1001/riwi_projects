@@ -32,19 +32,49 @@ jobs:
           PREFIX="python/workshop_2"
           BRANCH="project/python/workshop_2"
           git fetch origin develop "$BRANCH"
-          # Trivial case: nothing to pull (publish-subtrees usually already
-          # propagated develop into the branch moments before this fires).
-          if git merge-base --is-ancestor "origin/$BRANCH" origin/develop; then
-            echo "Already in sync; nothing to do."
+
+          # develop's current synthetic SHA for the prefix (= what `git subtree
+          # split --prefix=<prefix>` produces from `develop`). The pull's safety
+          # is decided relative to this SHA, not relative to origin/develop —
+          # develop can have advanced on commits outside the prefix while the
+          # branch was quiet.
+          tmp_branch="subtree_split_$$"
+          git subtree split --prefix="$PREFIX" -b "$tmp_branch"
+          expected_sha=$(git rev-parse "$tmp_branch")
+          git branch -D "$tmp_branch" || true
+
+          actual_sha=$(git rev-parse "refs/remotes/origin/$BRANCH")
+
+          if [[ "$actual_sha" == "$expected_sha" ]]; then
+            echo "$BRANCH already at develop's synthetic SHA ($expected_sha); nothing to pull."
             exit 0
           fi
-          # Divergence: develop moved ahead of the branch in a way that
-          # the branch did not include (history corruption, force-push, etc.).
-          if ! git merge-base --is-ancestor origin/develop "origin/$BRANCH"; then
+
+          # Four-way classification. The pull is only safe when the project
+          # branch's tip extends develop's synthetic history for this prefix.
+          if git merge-base --is-ancestor "$expected_sha" "$actual_sha"; then
+            : # branch is strictly ahead; proceed to pull below
+          elif git merge-base --is-ancestor "$actual_sha" "$expected_sha"; then
+            echo "$BRANCH ($actual_sha) is behind develop's synthetic SHA ($expected_sha);"
+            echo "publish-subtrees.yml owns the develop -> project direction. Nothing to do."
+            exit 0
+          elif [[ -n "$(git merge-base "$actual_sha" "$expected_sha")" ]]; then
             echo "::error::$BRANCH and develop have diverged at prefix $PREFIX."
-            echo "::error::Manual intervention required."
+            echo "::error::No fast-forward is possible: $actual_sha and $expected_sha share an ancestor but neither is reachable from the other."
+            echo "::error::This usually means:"
+            echo "::error::  - $BRANCH was restored from GitHub's recently-deleted-branches UI cache."
+            echo "::error::  - $BRANCH was force-pushed manually with non-subtree history."
+            echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run this workflow."
+            exit 1
+          else
+            echo "::error::$BRANCH and develop have no common ancestor; $BRANCH is orphaned."
+            echo "::error::This is a chronic state left behind by the historical publish-subtrees divergence bug."
+            echo "::error::To recover: delete $BRANCH on origin (Settings > Branches, or 'git push origin :$BRANCH') and re-run publish-subtrees.yml on develop to re-bootstrap it at develop's synthetic SHA."
             exit 1
           fi
+
+          echo "$BRANCH is ahead of develop's synthetic SHA ($expected_sha -> $actual_sha); pulling."
+
           git checkout -B develop origin/develop
           git subtree pull --prefix="$PREFIX" origin "$BRANCH"
           if ! git diff --quiet origin/develop HEAD; then
