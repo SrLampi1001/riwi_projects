@@ -1,0 +1,52 @@
+project:
+  id: web-assessment-test-final-simulacrum
+  name: Assessment test final simulacrum
+  description: Full stack application for database managment and record creation inside Colombian wildfire monitoring "Yarumo Fundation".
+
+  type: web-app
+  categories:
+    - education
+    - web
+    - assessment-test
+    - module-4
+  tags:
+    - react
+    - express
+    - postgresql
+    - pgvector
+    - RAG
+    - stt
+    - tts
+    - nvidia-nim
+    - llama
+
+  status: in-progress
+
+  tech_stack:
+    languages:
+      - typescript
+      - javascript
+    frameworks:
+      - react
+      - vite
+      - express
+    databases:
+      - postgresql
+      - pgvector
+    ai:
+      - nvidia-nim
+      - mistral
+    tools:
+      - docker
+      - git
+
+  repository:
+    provider: github
+    owner: SrLampi1001
+    name: riwi_projects/assessment_test_final_simulacrum
+    branch: project/web/
+
+  documentation:
+    readme: true
+    documentation-folder:
+      - path: webprojects/assessment_test_final_simulacrum
