@@ -1,0 +1,97 @@
+name: Sync to Develop
+# Lives at <prefix>/.github/workflows/sync-to-develop.yml in develop, so after
+# `git subtree split --prefix=<prefix>` it appears at .github/workflows/ at the
+# root of the project branch and triggers on push to that branch.
+on:
+  push:
+    branches:
+      - project/web/assessment_test_final_simulacrum
+  workflow_dispatch: {}
+concurrency:
+  group: subtree-sync
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      # `token: RIWI_PROJECTS_TOKEN` routes the subsequent `git push` (and the
+      # `git pull` that contains it) through the fine-grained PAT instead of the
+      # implicit GITHUB_TOKEN. Without this, GitHub blocks pushes that modify
+      # files under .github/workflows/ — which this workflow does on every run
+      # when the project branch has a different workflow file content than
+      # develop.
+      # `persist-credentials: false` ensures actions/checkout doesn't write a
+      # credential helper that would override the per-command remote URL set
+      # below.
+      - name: Checkout develop
+        uses: actions/checkout@v7
+        with:
+          ref: develop
+          fetch-depth: 0
+          token: ${{ secrets.RIWI_PROJECTS_TOKEN }}
+          persist-credentials: false
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Pull project/web/assessment_test_final_simulacrum into develop
+        env:
+          TOKEN: ${{ secrets.RIWI_PROJECTS_TOKEN }}
+        run: |
+          set -euo pipefail
+          PREFIX="webprojects/assessment_test_final_simulacrum"
+          BRANCH="project/web/assessment_test_final_simulacrum"
+
+          # Belt-and-suspenders PAT-auth override (see checkout-step comment).
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          git fetch origin develop "$BRANCH"
+
+          # The synthetic SHA is computed for the early-exit check (skip when
+          # develop's synthetic is already the project branch tip), but the
+          # classification logic that used to gate behavior was dropped in
+          # PR #72 because synthetic-vs-mainline parent-chain mismatches caused
+          # false "diverged" reports on every post-bootstrap pull.
+
+          tmp_branch="subtree_split_$$"
+          git subtree split --prefix="$PREFIX" -b "$tmp_branch"
+          expected_sha=$(git rev-parse "$tmp_branch")
+          git branch -D "$tmp_branch" || true
+
+          actual_sha=$(git rev-parse "refs/remotes/origin/$BRANCH")
+
+          if [[ "$actual_sha" == "$expected_sha" ]]; then
+            echo "$BRANCH already at develop's synthetic SHA ($expected_sha); nothing to pull."
+            exit 0
+          fi
+
+          git checkout -B develop origin/develop
+
+          # Pulls use raw `git pull --strategy subtree` instead of `git subtree
+          # pull`. The latter is hard-coded to `git merge --no-ff` (see
+          # git-subtree.sh source), which means every pull produces a merge
+          # commit on develop even when a fast-forward is geometrically
+          # possible. With `--rejoin` on the publish side (see
+          # publish-subtrees.yml), develop's synthetic SHA is reachable from
+          # develop's mainline parent chain, so `git pull --ff-only` is the
+          # right tool: real fast-forward pulls skip the merge commit; the
+          # one-time orphan-bootstrap case fails the FF check below and falls
+          # back to the unrelated-history merge bootstrap.
+          #
+          # `--no-rebase` is needed on the fallback: `git pull` without it
+          # prompts `fatal: Need to specify how to reconcile divergent
+          # branches.` when no shared ancestor exists, even with
+          # `--allow-unrelated-histories`.
+          if ! git pull --ff-only --strategy subtree origin "$BRANCH"; then
+            echo "git pull --ff-only failed; retrying with --allow-unrelated-histories --no-rebase (one-time unrelated-history bootstrap)."
+            git pull --allow-unrelated-histories --no-rebase --strategy subtree origin "$BRANCH"
+          fi
+
+          if ! git diff --quiet origin/develop HEAD; then
+            git push origin develop
+            echo "Pulled $BRANCH into develop."
+          else
+            echo "Already up to date; nothing to push."
+          fi
