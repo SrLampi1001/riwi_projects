@@ -160,7 +160,7 @@ And add support for [pgvector](https://github.com/pgvector/pgvector#docker) usin
 ```bash
     docker pull pgvector/pgvector:pg18-trixie
 ```
-Alternatively, use a docker [hardened image for docker pgvector](https://hub.docker.com/hardened-images/catalog/dhi/pgvector/guides):
+Alternatively, use a docker [hardened image for pgvector](https://hub.docker.com/hardened-images/catalog/dhi/pgvector/guides):
 ```yaml
 services:
   db:
@@ -226,3 +226,38 @@ CALL a_procedure();
 Both can be used, procedures do not return values, functions do. 
 
 ### Search, context retrieval and security
+Since the data needs a specific access level to be retrieved:
+- A mirror database with the same information as the database but vectorized would allow prompt injections attacks to retrieve confidential information, no matter the harness.
+- A mirror vector database from the database will mean double the queries and performance time for every operation → Create a sighting, it needs to go both into the normal database and the vector database
+
+So, a mirror database is discarded for the before reasons, instead:
+- Create a materialized view using the investigator level access and vectorizing the information.
+- The only information the AI would ever reach would depend solely on the backend system, therefore, any breach to the confidential information can be traced back to only one cause.
+- Performance wouldn't be as compromised, the materialized view would only need to be updated when the AI Agent is used, not in real time.
+
+The vectorized information would exist as a single table with all the required information per sighting. 
+To reduce complexity, a chunk in the database would correspond to a whole sighting information. 
+This means that the chunks would be arbitrarily big or small, and the more updates the notes on sighting has, the more would the chunk grow
+- To work around the note's context bloating, the main table holds only the last note version, and there exists another table where the multiple notes body exist.  
+
+### Backend and REST API
+```mermaid
+flowchart TB
+    subgraph UI ["Presentation Layer"]
+        direction LR
+        WebApp[React App] --- MobileApp[iOS/Android]
+    end
+
+    subgraph API ["Application Layer"]
+        direction LR
+        Gateway[API Gateway] --> CoreAPI[Backend Service]
+    end
+
+    subgraph Data ["Data Layer"]
+        direction LR
+        MainDB[(Primary SQL)] --- Cache[(Redis Cache)]
+    end
+
+    UI --> API
+    API --> Data
+```
