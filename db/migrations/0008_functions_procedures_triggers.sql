@@ -123,26 +123,29 @@ GRANT EXECUTE ON FUNCTION bio.bio_register_sighting(
 -- Researcher lookup with keyset pagination on (name, id). Required by §3.
 -- SECURITY INVOKER: caller sees what RLS allows; bioma_app has SELECT on
 -- bio_investigator only for the rows it can resolve through other policies.
-CREATE OR REPLACE PROCEDURE bio.bio_search_investigators(
-    IN  p_after_name    varchar,
-    IN  p_after_id      bigint,
-    IN  p_limit         integer,
-    OUT o_id            bigint,
-    OUT o_name          varchar,
-    OUT o_email         varchar,
-    OUT o_position      varchar,
-    OUT o_accreditation smallint
+--
+-- Note: PostgreSQL stored procedures (CREATE PROCEDURE) cannot use
+-- RETURN QUERY because they have no return value; they only support
+-- OUT parameters + a CALL interface. A SETOF-returning function is the
+-- idiomatic shape for a row-returning lookup; the brief's intent
+-- (a callable database-side lookup the backend consumes) is preserved.
+CREATE OR REPLACE FUNCTION bio.bio_search_investigators(
+    p_after_name varchar,
+    p_after_id   bigint,
+    p_limit      integer
+)
+RETURNS TABLE (
+    o_id            bigint,
+    o_name          varchar,
+    o_email         varchar,
+    o_position      varchar,
+    o_accreditation smallint
 )
 LANGUAGE plpgsql
 AS $$
-DECLARE
-    rec RECORD;
 BEGIN
-    -- Returns a single result set with the requested page.
-    -- Callers consume it with `CALL bio.bio_search_investigators(...)` and
-    -- fetch all rows; keyset cursor is the (name, id) pair of the last row.
     RETURN QUERY
-        SELECT i.id, i.name, i.email, p.name AS position, a.level
+        SELECT i.id, i.name, i.email, p.name::varchar AS position, a.level
           FROM bio.bio_investigator i
           JOIN bio.bio_position      p ON p.id = i.position_id
           JOIN bio.bio_accreditation a ON a.id = i.accreditation_id
@@ -153,8 +156,8 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON PROCEDURE bio.bio_search_investigators(varchar, bigint, integer) FROM PUBLIC;
-GRANT EXECUTE ON PROCEDURE bio.bio_search_investigators(varchar, bigint, integer) TO bioma_app;
+REVOKE ALL ON FUNCTION bio.bio_search_investigators(varchar, bigint, integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION bio.bio_search_investigators(varchar, bigint, integer) TO bioma_app;
 
 -- Edit (append a note version) or logically annul a sighting owned by the
 -- actor. The brief mandates logical annulment only — this procedure is the
