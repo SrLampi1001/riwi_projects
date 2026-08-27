@@ -16,8 +16,13 @@ for i in {1..60}; do
     sleep 2
 done
 
-# Make sure the migrations bookkeeping table exists before we query it.
+# Make sure the schema + migrations bookkeeping table exist before we
+# query them. 0001_init.sql also creates the schema and the table; this
+# pre-step is only for the very first run before any migration has been
+# applied (the schema does not yet exist, so the bookkeeping table
+# cannot be created without first creating the schema).
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q <<'SQL'
+CREATE SCHEMA IF NOT EXISTS bio;
 CREATE TABLE IF NOT EXISTS bio.bio_schema_migrations (
     version    text        PRIMARY KEY,
     applied_at timestamptz NOT NULL DEFAULT now()
