@@ -22,18 +22,20 @@ This document is the **state snapshot** a fresh AI session reads at the start of
 
 - **PR #78** (merged): added `CONTRIBUTING.md`, `AGENTS.md`, rewrote `README.md` with the canonical-branch clone instruction. Branch-naming convention (`assessment_test_final_simulacrum/<type>/`) is now the rule.
 - **Architecture** (`docs/ARCHITECTURE.md`): final, with 3FN domain model, RLS design, RAG pipeline, Clean Architecture + pragmatic CQRS, API contract, medallion ETL, BDD QA, free-tier production topology, and the tech-stack table (Mistral `mistral-embed` for embeddings, NVIDIA NIM `meta/llama-3.3-70b-instruct` for chat, behind separate ports).
+- **PR #79** (merged): database foundation. Migrations 0001–0009 (the `bio_*` schema, RLS, HNSW + keyset + partial unique indexes, `bio_visible_sighting` view, transactional `bio_register_sighting` + `bio_edit_or_annul_sighting` + `bio_search_investigators` (now a `RETURNS TABLE` function), and the `bio_mark_embedding_dirty` trigger). Medallion Bronze → Silver seed loader (`db/seed/seed.py`) with deterministic dev passwords (`Bio-{investigator_id}`) printed to stdout. Docker compose for `db` + `migrate` + `seed`, with every value sourced from env vars.
+- **PR #80** (open → next): auth + actor propagation. FastAPI backend (`backend/`) with argon2id password hashing, HS256 short-lived JWT (15 min) carrying `sub = investigator_id`, 32-byte rotating refresh tokens with SHA-256 hashing, family-id reuse detection, single `bioma_app` connection pool, per-request `SET LOCAL app.current_user_id` via a `ConnectionProvider` port (so use cases depend on the port, not on the pool), RFC 9457 `application/problem+json` error envelopes, `X-Request-Id` middleware. Endpoints: `POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`, `GET /api/v1/me`, `GET /healthz`. Seed extended to upsert `bio_auth_credential`. Backend compose service with `BACKEND_PORT` env var. 16 tests passing (11 unit + 5 integration).
 
 ## 3. What's next (the implementation plan)
 
 Following the brief's *ruta sugerida* (model-first, DB-second, backend third):
 
-1. **Database foundation** — first PR. DDL, RLS, functions/procedures/triggers, medallion seed, docker compose for `db` + `migrate` + `seed`.
-2. **Auth + actor propagation** — second PR. Argon2id hashing, short-lived JWT, refresh-token rotation, `app.current_user_id` middleware, psycopg 3 adapter wiring.
-3. **Use cases + REST API (read path)** — third PR. Clean Architecture skeleton, keyset-paginated history endpoint, `ts_headline` search endpoint, the visible-sighting view query.
-4. **Use cases + REST API (write path)** — fourth PR. Register / edit / annul use cases calling the DB functions and procedures. Idempotent registration via `obs_ref`.
-5. **RAG copilot** — fifth PR. Mistral embedding adapter, NVIDIA NIM chat adapter, prompt versioning, citations, denial taxonomy, consumption audit (`bio_copilot_usage`).
-6. **Frontend** — sixth PR. React 19 + TS + Vite, three zones, i18n, lazy keyset, registration state machine.
-7. **QA + deploy** — seventh PR. pytest-bdd against testcontainers, free-tier production topology, README run instructions.
+1. ~~**Database foundation**~~ — done (PR #79).
+2. ~~**Auth + actor propagation**~~ — done (PR #80, ready to open).
+3. **Use cases + REST API (read path)** — next. Clean Architecture extension, keyset-paginated `/api/v1/sightings` history endpoint, `ts_headline` search at `/api/v1/sightings/search?q=`, the visible-sighting view query, and `/api/v1/investigators?cursor` keyed on `bio_search_investigators`.
+4. **Use cases + REST API (write path)** — register / edit / annul use cases calling the DB functions and procedures. Idempotent registration via `obs_ref`.
+5. **RAG copilot** — Mistral embedding adapter, NVIDIA NIM chat adapter, prompt versioning, citations, denial taxonomy, consumption audit (`bio_copilot_usage`).
+6. **Frontend** — React 19 + TS + Vite, three zones, i18n, lazy keyset, registration state machine.
+7. **QA + deploy** — pytest-bdd against testcontainers, free-tier production topology, README run instructions.
 
 Steps 1–5 are backend + data; 6 is frontend; 7 is closure. The order matters: each step builds on what is already merged into the canonical branch.
 
