@@ -1,0 +1,54 @@
+# Local development stack for the Bioma platform.
+# This file is intentionally DB-only at this stage (PR #1: db foundation).
+# Backend and frontend services will be added in subsequent PRs.
+
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    container_name: bioma_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bioma_superuser
+      POSTGRES_PASSWORD: change_me_superuser
+      POSTGRES_DB: bioma_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - bioma_pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bioma_superuser -d bioma_local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Apply db/migrations in numeric order. Connects as the postgres superuser
+  # because 0001_init.sql needs to CREATE ROLE + CREATE EXTENSION, both of
+  # which require superuser privileges.
+  migrate:
+    build:
+      context: .
+      dockerfile: ops/migrate/Dockerfile
+    container_name: bioma_migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://bioma_superuser:change_me_superuser@db:5432/bioma_local
+      MIGRATIONS_DIR: /db/migrations
+    restart: "no"
+
+  seed:
+    build:
+      context: .
+      dockerfile: ops/seed/Dockerfile
+    container_name: bioma_seed
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      SEED_JSON_PATH: /seed/seed.json
+      DATABASE_URL: postgresql://bioma_owner:change_me_owner@db:5432/bioma_local
+    restart: "no"
+
+volumes:
+  bioma_pgdata:
