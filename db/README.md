@@ -18,6 +18,7 @@ This directory is intentionally split into two halves:
 6. `0006_bio_sighting_and_field_note.sql` — `bio_sighting` (with `embedding vector(1024)` and `embedding_dirty_at`), `bio_field_note`.
 7. `0007_indexes_views_policies.sql` — HNSW + composite + partial unique indexes; `bio_visible_sighting` view; RLS on `bio_sighting` and `bio_field_note`.
 8. `0008_functions_procedures_triggers.sql` — `bio_register_sighting(...)`, `bio_search_investigators(...)`, `bio_edit_or_annul_sighting(...)`, the `bio_mark_embedding_dirty` trigger.
+9. `0009_seed_workspace.sql` — `GRANT CREATE ON SCHEMA bio TO bioma_owner` so the seed role can provision the bronze staging table; creates `bio_stg_seed_sighting`.
 
 ## Roles
 
