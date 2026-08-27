@@ -1,6 +1,5 @@
 # Local development stack for the Bioma platform.
-# This file is intentionally DB-only at this stage (PR #1: db foundation).
-# Backend and frontend services will be added in subsequent PRs.
+# Frontend service lands in a later PR.
 #
 # All values are read from the host environment (or from a sibling .env file
 # via the `env_file` directive at the bottom). Copy `.env.example` to `.env`
@@ -59,6 +58,48 @@ services:
       SEED_JSON_PATH: /seed/seed.json
       DATABASE_URL: postgresql://${SEED_DB_USER:-bioma_owner}:${SEED_DB_PASSWORD:-change_me_owner}@${POSTGRES_HOST_INTERNAL:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-bioma_local}
     restart: "no"
+
+  # FastAPI backend. Connects as bioma_app (NOBYPASSRLS) so Row Level Security
+  # is the single audit boundary. The host port is configurable via BACKEND_PORT
+  # so a busy developer can move the API off 8000 without editing compose.
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bioma_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      seed:
+        condition: service_completed_successfully
+    environment:
+      # Single bioma_app connection pool. Composed from individual vars.
+      DATABASE_URL: postgresql://${POSTGRES_APP_USER:-bioma_app}:${POSTGRES_APP_PASSWORD:-change_me_app}@${POSTGRES_HOST_INTERNAL:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-bioma_local}
+      JWT_SECRET: ${JWT_SECRET:-change_me_jwt_secret}
+      JWT_ACCESS_TTL_SECONDS: ${JWT_ACCESS_TTL_SECONDS:-900}
+      JWT_REFRESH_TTL_SECONDS: ${JWT_REFRESH_TTL_SECONDS:-2592000}
+      APP_ENV: ${APP_ENV:-local}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # AI provider env vars declared for the copilot PR; not consumed yet.
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      MISTRAL_BASE_URL: ${MISTRAL_BASE_URL:-https://api.mistral.ai/v1}
+      MISTRAL_EMBED_MODEL: ${MISTRAL_EMBED_MODEL:-mistral-embed}
+      NVIDIA_NIM_API_KEY: ${NVIDIA_NIM_API_KEY:-}
+      NVIDIA_NIM_BASE_URL: ${NVIDIA_NIM_BASE_URL:-https://integrate.api.nvidia.com/v1}
+      NVIDIA_NIM_CHAT_MODEL: ${NVIDIA_NIM_CHAT_MODEL:-meta/llama-3.3-70b-instruct}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2).status == 200 else 1)"
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
 
 volumes:
   bioma_pgdata:
