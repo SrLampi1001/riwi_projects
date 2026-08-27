@@ -25,6 +25,8 @@ After cloning, all new branches targeting this project must start with `assessme
 
 Architecture and tech stack are locked. Implementation is in progress; check open PRs for the current state.
 
+**Current slice (PR in progress):** database foundation — DDL, RLS, transactional function/procedures, embedding-dirty trigger, medallion seed (Bronze → Silver), docker compose for `db` + `migrate` + `seed`. Run instructions live in [`db/README.md`](./db/README.md) and [`db/seed/README.md`](./db/seed/README.md).
+
 ## Stack at a glance
 
 Python 3.13 · FastAPI · PostgreSQL 18 + pgvector · psycopg 3 · React 19 + TypeScript + Vite 8 · Leaflet + OSM · react-i18next · pytest + pytest-bdd + testcontainers · Docker Compose.

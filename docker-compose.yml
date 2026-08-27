@@ -1,0 +1,65 @@
+# Local development stack for the Bioma platform.
+# This file is intentionally DB-only at this stage (PR #1: db foundation).
+# Backend and frontend services will be added in subsequent PRs.
+#
+# All values are read from the host environment (or from a sibling .env file
+# via the `env_file` directive at the bottom). Copy `.env.example` to `.env`
+# and edit, then `docker compose up`. Defaults here match `.env.example` so
+# the default local setup works out of the box.
+
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    container_name: bioma_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bioma_superuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_superuser}
+      POSTGRES_DB: ${POSTGRES_DB:-bioma_local}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - bioma_pgdata:/var/lib/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${POSTGRES_USER:-bioma_superuser} -d ${POSTGRES_DB:-bioma_local}
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Apply db/migrations in numeric order. Connects as the postgres superuser
+  # because 0001_init.sql needs to CREATE ROLE + CREATE EXTENSION, both of
+  # which require superuser privileges.
+  migrate:
+    build:
+      context: .
+      dockerfile: ops/migrate/Dockerfile
+    container_name: bioma_migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Composed from individual vars so there's a single source of truth.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-bioma_superuser}:${POSTGRES_PASSWORD:-change_me_superuser}@${POSTGRES_HOST_INTERNAL:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-bioma_local}
+      MIGRATIONS_DIR: /db/migrations
+    restart: "no"
+
+  # Medallion Bronze -> Silver loader. Connects as bioma_owner (BYPASSRLS)
+  # because 0001_init.sql creates that role.
+  seed:
+    build:
+      context: .
+      dockerfile: ops/seed/Dockerfile
+    container_name: bioma_seed
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      SEED_JSON_PATH: /seed/seed.json
+      DATABASE_URL: postgresql://${SEED_DB_USER:-bioma_owner}:${SEED_DB_PASSWORD:-change_me_owner}@${POSTGRES_HOST_INTERNAL:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-bioma_local}
+    restart: "no"
+
+volumes:
+  bioma_pgdata:
+
