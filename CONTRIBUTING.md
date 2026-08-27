@@ -1,6 +1,8 @@
-# Contributing — Bioma (project/web/assessment_test_final_simulacrum)
+# Contributing — Bioma
 
-This document is the single source of truth for how to work on this project: branching, commits, PRs, AI-agent etiquette, coding conventions, and the skills the assistant should load when relevant. **`AGENTS.md` is a pointer to this file** — keep this one authoritative and update both.
+This document is the single source of truth for how to work on this project: branching, commits, pull requests, coding conventions, and the review workflow. It applies to humans and to AI agents alike.
+
+AI coding assistants operating on this repo should also read **`AGENTS.md`**, which is a pointer that summarizes the rules an agent must internalize. The two files are kept in sync; if they disagree, this file wins.
 
 ---
 
@@ -24,25 +26,24 @@ If you find yourself on `main` or `develop`, stop — `git switch project/web/as
 
 ---
 
-## 2. Workflow: PR-first, no local-merge hacks
+## 2. Workflow: PR-first, no direct merges
 
-We switched to a PR-first workflow to keep the human in the loop on everything.
+All changes — human and AI-authored alike — go through a Pull Request. Direct local merges into `project/web/assessment_test_final_simulacrum` are not used.
 
-- **All changes go through a Pull Request**, including the work that AI agents produce. Direct local merges into `project/web/assessment_test_final_simulacrum` are not used anymore.
-- Branch name format: `<type>/<short-kebab-summary>` (see §3).
+- Branch name format: `assessment_test_final_simulacrum/<type>/<short-kebab-summary>` (see §3).
 - One PR = one commit, ideally (use `git commit --amend` or squash at merge time). Don't ship "drive-by" commits mixed into a feature PR.
 - Before opening the PR: re-read your diff, run the project's checks (`docker compose config` at minimum; lint/typecheck/test once code lands), update `ARCHITECTURE.md` and this file if a design decision changed.
-- **Do not merge your own PR.** Even the human owner reviews them; PRs are open for review.
+- **No one self-merges.** Every PR is reviewed by the human owner before merge, including AI-authored PRs.
 
 ### 2.1 AI-authored Pull Requests
 
-The same GitHub account is used by the human and by AI agents (opencode / Cursor / etc.). To keep reviews honest, **every PR authored with substantial AI assistance must be visibly labelled as such.**
+The same GitHub account is used by the human and by AI coding agents (opencode, Cursor, etc.). To keep reviews honest, **the single project norm is: any PR with substantial AI assistance must be visibly marked as such.** No exceptions.
 
-- **Add the label `ai-assisted` to the PR** when opening it (`gh pr create --label ai-assisted`). The PR template below reminds you; the assistant does this automatically.
+- **Add the label `ai-assisted` to the PR** when opening it (`gh pr create --label ai-assisted`).
 - **Add the prefix `[AI]` to the PR title**, e.g. `[AI] Feat: Add pgvector migration`.
 - In the PR description, include a one-line `Assisted-by:` note naming the tool and model (e.g. `Assisted-by: opencode / MiniMax-M3`). Keep it factual; don't pad.
-- AI agents must never bypass the `ai-assisted` label — that would defeat the purpose. If a PR is mostly hand-written but used an autocomplete suggestion, the label is optional; use judgement.
-- The reviewer is the final gate. AI PRs are reviewed by the human before merge, every time.
+- The `ai-assisted` label must never be omitted when AI had substantial input — that defeats the purpose. If a PR is mostly hand-written and only used a small autocomplete suggestion, the label is optional; use judgement.
+- AI agents do **not** bypass the label. The human owner reviews every PR — AI or not — before merge.
 
 ### 2.2 PR descriptions: write them to a temp file, don't pass them inline
 
@@ -65,7 +66,8 @@ This is a shell-hygiene tip, not a project rule — anyone using bash/zsh withou
 
 ## Checklist
 - [ ] Reads cleanly
-- [ ] Branches off `project/web/assessment_test_final_simulacrum`
+- [ ] Branched off `project/web/assessment_test_final_simulacrum`
+- [ ] Branch name starts with `assessment_test_final_simulacrum/<type>/`
 - [ ] No secrets, no `BYPASSRLS`, no SQL string concat, no `OFFSET`
 - [ ] `ARCHITECTURE.md` updated if a design decision changed
 - [ ] Tests added/updated where it matters
@@ -94,16 +96,29 @@ Repo style: `<Type>: <imperative summary>` in English, sentence-case after the c
 
 Examples from the existing log: `Feat: add docs/ folder and ADR record`, `Fix: assessment test renamed to simulacrum`.
 
-### 3.2 Branch types
+### 3.2 Branch naming
 
-- `feat/<scope>-<short-summary>` — new capability
-- `fix/<short-summary>` — bug
-- `chore/<short-summary>` — tooling
-- `docs/<short-summary>` — docs only
-- `refactor/<short-summary>`
-- `test/<short-summary>`
+All branches that target this project **must** start with the `assessment_test_final_simulacrum/` prefix, followed by the type, then a kebab-case summary. The type comes from the same set as commit types (§3.1).
 
-Avoid long branch names. Keep the scope noun-first (`auth/`, `db/`, `rag/`, `frontend/`) when the change is clearly one of those.
+| Branch pattern | Purpose |
+|---|---|
+| `assessment_test_final_simulacrum/feat/<scope>-<summary>` | New user-visible capability |
+| `assessment_test_final_simulacrum/fix/<summary>` | Bug fix |
+| `assessment_test_final_simulacrum/chore/<summary>` | Tooling, dependencies, CI |
+| `assessment_test_final_simulacrum/docs/<summary>` | Documentation only |
+| `assessment_test_final_simulacrum/refactor/<summary>` | Internal restructure, no behavior change |
+| `assessment_test_final_simulacrum/test/<summary>` | Tests only |
+| `assessment_test_final_simulacrum/hotfix/<summary>` | Urgent fix to canonical branch |
+
+Keep names short. Prefer a noun-first scope when the change is clearly one area (`auth/`, `db/`, `rag/`, `frontend/`).
+
+Examples:
+
+- `assessment_test_final_simulacrum/feat/db-pgvector-migration`
+- `assessment_test_final_simulacrum/fix/auth-refresh-token-reuse`
+- `assessment_test_final_simulacrum/docs/contributing-and-readme`
+
+`main` and `develop` are not project branches — they belong to a different, unrelated repository lineage managed via `git subtree` — so don't name branches under them either.
 
 ---
 
@@ -124,11 +139,11 @@ The full architectural rules live in `ARCHITECTURE.md`. The non-negotiables are 
 
 ---
 
-## 5. Skills the AI agent should load
+## 5. Skills (reference for AI assistants)
 
-The assistant (opencode / Cursor) should treat the following as **load-on-demand skills** — load them when the change touches that area. Keep this list short and project-specific; generic language skills aren't listed here.
+The names below are the **load-on-demand skill keys** an AI assistant operating on this repo (opencode, Cursor, etc.) should load when the change touches that area. The keys are descriptive; the actual `<skill>` blocks can be added to the assistant's installed skills later. Generic language skills aren't listed here — keep this list project-specific.
 
-| Skill | Load when the change touches… |
+| Skill key | Load when the change touches… |
 |---|---|
 | `postgres-rd` | DDL, RLS, functions, procedures, triggers, indexes, pgvector |
 | `pgvector-rd` | Embedding storage, similarity search, HNSW, vector indexes |
@@ -145,15 +160,15 @@ The assistant (opencode / Cursor) should treat the following as **load-on-demand
 | `docker-compose-rd` | The five-service compose (db, migrate, seed, backend, frontend) |
 | `free-tier-deploy-rd` | Neon / Render free-tier gotchas (pooled connections in transaction mode, cold start, PITR retention) |
 
-When a skill doesn't exist in your tool's catalog yet, follow the principle documented here rather than guessing. Add new skills to this table, **and to your tool's installed skills**, with a one-line description and the trigger.
+If a skill doesn't exist in the assistant's catalog yet, follow the principle documented here rather than guessing. Add new skills to this table and to the assistant's installed skills, with a one-line description and the trigger.
 
 ---
 
 ## 6. Reviews & merge
 
-- **The human reviews every PR**, including AI-authored ones. AI agents do not self-approve.
-- Merge method: **squash** by default, keeping the PR title (prefixed with `[AI]` when applicable) as the commit message on `project/web/assessment_test_final_simulacrum`.
-- A merge automatically triggers `.github/workflows/sync-to-develop.yml`, which pulls the change into `develop`. Don't fight that workflow; let it run.
+- Every PR is reviewed by the human owner before merge, including AI-authored PRs. No self-merge by humans or agents.
+- Default merge method: **squash**, keeping the PR title (prefixed with `[AI]` when applicable) as the commit message on `project/web/assessment_test_final_simulacrum`.
+- A merge into the canonical branch automatically triggers `.github/workflows/sync-to-develop.yml`, which pulls the change into `develop`. Don't fight that workflow; let it run.
 - For breaking architectural decisions, write a short entry in a separate `DECISIONS.md` (not yet created — file it the first time a real trade-off is made and link it from `ARCHITECTURE.md`).
 
 ---
@@ -161,9 +176,10 @@ When a skill doesn't exist in your tool's catalog yet, follow the principle docu
 ## 7. Quick checklist (before you push)
 
 - [ ] Branched off `project/web/assessment_test_final_simulacrum`.
+- [ ] Branch name starts with `assessment_test_final_simulacrum/<type>/`.
 - [ ] Commit message matches the convention.
 - [ ] No secrets in the diff.
 - [ ] No physical deletes, no SQL concat, no `OFFSET`.
 - [ ] `ARCHITECTURE.md` updated if a design decision changed.
-- [ ] PR opened with the right label and description; PR title `[AI]` prefix if AI-assisted.
+- [ ] PR opened with the right label and description; PR title `[AI]` prefix + `ai-assisted` label if AI-assisted.
 - [ ] Did **not** merge the PR.

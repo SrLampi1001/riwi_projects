@@ -7,8 +7,19 @@ Wildlife monitoring platform for the Fundación Yarumo — sightings, researcher
 ## Where to start
 
 - **Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — read first.
-- **Working agreements:** [`CONTRIBUTING.md`](./CONTRIBUTING.md) — branches, PR rules, AI-agent etiquette, skills.
+- **Working agreements:** [`CONTRIBUTING.md`](./CONTRIBUTING.md) — branches, PR rules, conventions.
+- **Quick rules for AI assistants:** [`AGENTS.md`](./AGENTS.md) — pointer summary.
 - **Assignment brief (in Spanish):** [`docs/proyecto-integrador-bioma.md`](./docs/proyecto-integrador-bioma.md).
+
+## Get the code
+
+Clone the canonical branch only — `--single-branch` keeps the working tree free of the unrelated `main` / `develop` lineage:
+
+```bash
+git clone -b project/web/assessment_test_final_simulacrum --single-branch https://github.com/SrLampi1001/riwi_projects.git
+```
+
+After cloning, all new branches targeting this project must start with `assessment_test_final_simulacrum/<type>/` (see `CONTRIBUTING.md` §3.2).
 
 ## Status
 
