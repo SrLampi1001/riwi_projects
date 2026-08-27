@@ -44,7 +44,17 @@ The same GitHub account is used by the human and by AI agents (opencode / Cursor
 - AI agents must never bypass the `ai-assisted` label — that would defeat the purpose. If a PR is mostly hand-written but used an autocomplete suggestion, the label is optional; use judgement.
 - The reviewer is the final gate. AI PRs are reviewed by the human before merge, every time.
 
-### 2.2 PR template (suggested body)
+### 2.2 PR descriptions: write them to a temp file, don't pass them inline
+
+In a PowerShell shell, markdown characters like `` ` ``, `*`, and parentheses inside `--body "..."` get mangled by escaping rules — the PR body shows up with stray backslashes, broken backticks, or missing bullets. Avoid the pain:
+
+- Write the PR body to a temp `.md` file (e.g. `C:\Users\<you>\AppData\Local\Temp\opencode\pr-body.md`).
+- Pass it to `gh pr create --body-file <path>` (and `gh pr edit --body-file <path>` for updates).
+- Remove the temp file at the end of the session.
+
+This is a shell-hygiene tip, not a project rule — anyone using bash/zsh without the same pain can keep passing `--body` inline.
+
+### 2.3 PR template (suggested body)
 
 ```markdown
 ## Summary
